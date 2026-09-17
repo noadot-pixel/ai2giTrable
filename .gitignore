@@ -1,0 +1,20 @@
+# OS
+Thumbs.db
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+
+# Java / Tomcat build output (프로젝트에 추가되면 대비)
+target/
+build/
+*.class
+*.war
+
+# Node (필요해지면 대비)
+node_modules/
