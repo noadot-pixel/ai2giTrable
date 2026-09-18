@@ -236,8 +236,7 @@
              id="detailActions"
              hidden>
 
-            <a href="#"
-               id="editButton"
+            <a href="<%= contextPath %>/posts/edit.jsp?id=<%= postId %>"
                class="detail-edit-button">
                 수정
             </a>
@@ -281,15 +280,6 @@
         }
 
     })();
-
-    document.getElementById("editButton")
-        .addEventListener("click", function (event) {
-
-            event.preventDefault();
-
-            alert("수정 기능은 게시글 수정 화면 제작 후 연결됩니다.");
-
-        });
 
     document.getElementById("deleteButton")
         .addEventListener("click", function () {

@@ -628,7 +628,7 @@
         return div.innerHTML;
     }
 
-    (function renderLocalPosts() {
+    function renderLocalPosts() {
 
         const savedPosts =
             JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
@@ -649,10 +649,18 @@
                 document.createElement("article");
 
             article.className = "story-card";
+            article.dataset.localId = post.id;
             article.dataset.country = post.country;
             article.dataset.style = post.style;
             article.dataset.date = post.dataDate;
             article.dataset.views = "0";
+
+            const actionsHtml = isMine
+                ? '<div class="detail-actions local-post-actions">'
+                    + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
+                    + '<button type="button" class="detail-delete-button local-delete-button">삭제</button>'
+                    + '</div>'
+                : '';
 
             article.innerHTML =
                 '<a href="#" class="story-image local-post-link">'
@@ -668,24 +676,60 @@
                 + '<span>' + post.displayDate + '</span>'
                 + '<span>조회 0</span>'
                 + '<span>댓글 0</span>'
-                + '</div></div>';
+                + '</div>'
+                + actionsHtml
+                + '</div>';
 
             postList.insertBefore(article, postList.firstChild);
 
         });
 
-        postList.addEventListener("click", function (event) {
+    }
 
-            if (event.target.closest(".local-post-link")) {
+    renderLocalPosts();
 
-                event.preventDefault();
+    postList.addEventListener("click", function (event) {
 
-                alert("직접 작성한 게시글은 데모용이라 상세 페이지가 아직 연결되지 않았어요.");
+        const deleteButton = event.target.closest(".local-delete-button");
+
+        if (deleteButton) {
+
+            const card = deleteButton.closest(".story-card");
+            const localId = card.dataset.localId;
+
+            const isConfirmed =
+                confirm("이 게시글을 삭제하시겠습니까?");
+
+            if (!isConfirmed) {
+                return;
             }
 
-        });
+            const savedPosts =
+                JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
 
-    })();
+            const remainingPosts =
+                savedPosts.filter(function (post) {
+                    return post.id !== localId;
+                });
+
+            localStorage.setItem(
+                "trable_mock_posts",
+                JSON.stringify(remainingPosts)
+            );
+
+            location.reload();
+
+            return;
+        }
+
+        if (event.target.closest(".local-post-link")) {
+
+            event.preventDefault();
+
+            alert("직접 작성한 게시글은 데모용이라 상세 페이지가 아직 연결되지 않았어요.");
+        }
+
+    });
 
 
     const postCards =

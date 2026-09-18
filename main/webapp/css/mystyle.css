@@ -1283,3 +1283,8 @@
     font-weight: 700;
 }
 
+.local-post-actions {
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
