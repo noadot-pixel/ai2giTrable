@@ -1288,3 +1288,75 @@
     margin-bottom: 0;
 }
 
+/* =========================
+   마이페이지 (mypage.jsp)
+========================= */
+
+.write-field select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: #f8fbfe;
+    color: var(--text-color);
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.write-field select:focus {
+    outline: none;
+    border-color: var(--blue);
+    background-color: white;
+}
+
+.email-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.email-input-group input {
+    flex: 1;
+}
+
+.email-input-group select {
+    flex: 1;
+}
+
+.email-at {
+    color: var(--gray-color);
+    font-weight: 700;
+}
+
+.mypage-personal-section {
+    margin: 8px 0 24px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: #f9fbfd;
+}
+
+.mypage-personal-section .filter-label {
+    margin-bottom: 12px;
+}
+
+.radio-group {
+    margin-top: 4px;
+}
+
+.radio-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 20px;
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+    accent-color: var(--blue);
+}
+

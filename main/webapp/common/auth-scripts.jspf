@@ -22,7 +22,8 @@
         }
 
         memberMenu.innerHTML =
-            '<span class="member-nickname">'
+            '<a href="<%= contextPath %>/mypage.jsp">마이페이지</a>'
+            + '<span class="member-nickname">'
             + currentUser.nickname
             + '님</span>'
             + '<a href="#" id="logoutLink">로그아웃</a>';
