@@ -51,9 +51,9 @@
 <main>
 
     <!-- =========================
-         마이페이지
-         실제 회원 DB는 없고, 이 브라우저의 localStorage에
-         계정(uid)별로 프로필 정보를 저장하는 목업이다.
+         마이페이지 (보기 전용)
+         Firestore users/{uid} 문서에서 프로필을 읽어 보여준다.
+         수정은 /mypage/edit.jsp에서 한다.
     ========================== -->
 
     <section class="page-heading">
@@ -66,194 +66,57 @@
         <h1>마이페이지</h1>
 
         <p class="page-description">
-            내 프로필 정보를 확인하고 수정하세요.
+            내 프로필과 내가 작성한 글을 확인하세요.
         </p>
 
     </section>
 
-    <section class="write-section mypage-section">
+    <section class="profile-section">
 
-        <form id="profileForm">
+        <div class="profile-card">
 
-            <div class="write-field">
+            <img id="profileViewPhoto"
+                 class="profile-photo-large"
+                 src="<%= contextPath %>/images/logo.png"
+                 alt="프로필 이미지">
 
-                <label for="profileNickname">
-                    닉네임
-                </label>
+            <div class="profile-card-info">
 
-                <input type="text"
-                       id="profileNickname"
-                       name="profileNickname">
+                <h2 id="profileViewNickname"></h2>
 
-            </div>
+                <p id="profileViewBio" class="profile-bio"></p>
 
-            <div class="write-field">
-
-                <label for="profileBio">
-                    자기소개
-                </label>
-
-                <textarea id="profileBio"
-                          name="profileBio"
-                          rows="4"
-                          placeholder="자신을 간단히 소개해 주세요"></textarea>
-
-            </div>
-
-            <div class="write-field">
-
-                <label for="profileCountry">
-                    국가
-                </label>
-
-                <select id="profileCountry"
-                        name="profileCountry">
-
-                    <option value="KR">한국</option>
-                    <option value="JP">일본</option>
-                    <option value="ETC">기타</option>
-
-                </select>
-
-            </div>
-
-            <div class="write-field"
-                 id="profileCountryOtherField"
-                 hidden>
-
-                <label for="profileCountryOther">
-                    국가 직접 입력
-                </label>
-
-                <input type="text"
-                       id="profileCountryOther"
-                       name="profileCountryOther"
-                       placeholder="국가를 입력해 주세요">
-
-            </div>
-
-            <div class="write-field">
-
-                <label for="profileEmailLocal">
-                    이메일
-                </label>
-
-                <div class="email-input-group">
-
-                    <input type="text"
-                           id="profileEmailLocal"
-                           name="profileEmailLocal"
-                           placeholder="이메일 아이디">
-
-                    <span class="email-at">@</span>
-
-                    <select id="profileEmailDomain"
-                            name="profileEmailDomain">
-
-                        <option value="naver.com">naver.com</option>
-                        <option value="gmail.com">gmail.com</option>
-                        <option value="daum.net">daum.net</option>
-                        <option value="hanmail.net">hanmail.net</option>
-                        <option value="custom">직접입력</option>
-
-                    </select>
-
+                <div class="profile-meta">
+                    <span id="profileViewCountry"></span>
+                    <span id="profileViewEmail"></span>
                 </div>
 
-            </div>
-
-            <div class="write-field"
-                 id="profileEmailDomainOtherField"
-                 hidden>
-
-                <label for="profileEmailDomainOther">
-                    도메인 직접 입력
-                </label>
-
-                <input type="text"
-                       id="profileEmailDomainOther"
-                       name="profileEmailDomainOther"
-                       placeholder="example.com">
-
-            </div>
-
-            <div class="mypage-personal-section">
-
-                <p class="filter-label">개인정보</p>
-
-                <div class="write-field">
-
-                    <label for="profileBirthday">
-                        생일
-                    </label>
-
-                    <input type="date"
-                           id="profileBirthday"
-                           name="profileBirthday">
-
-                    <div class="radio-group">
-
-                        <label class="radio-option">
-                            <input type="radio"
-                                   name="birthdayVisibility"
-                                   value="public"
-                                   checked>
-                            공개
-                        </label>
-
-                        <label class="radio-option">
-                            <input type="radio"
-                                   name="birthdayVisibility"
-                                   value="private">
-                            비공개
-                        </label>
-
-                    </div>
-
+                <div class="profile-personal" id="profilePersonalInfo">
                 </div>
 
-                <div class="write-field">
-
-                    <label for="profileName">
-                        이름
-                    </label>
-
-                    <input type="text"
-                           id="profileName"
-                           name="profileName"
-                           placeholder="이름을 입력해 주세요">
-
-                    <div class="radio-group">
-
-                        <label class="radio-option">
-                            <input type="radio"
-                                   name="nameVisibility"
-                                   value="public"
-                                   checked>
-                            공개
-                        </label>
-
-                        <label class="radio-option">
-                            <input type="radio"
-                                   name="nameVisibility"
-                                   value="private">
-                            비공개
-                        </label>
-
-                    </div>
-
-                </div>
+                <a href="<%= contextPath %>/mypage/edit.jsp"
+                   class="auth-submit profile-edit-button">
+                    정보 수정
+                </a>
 
             </div>
 
-            <button type="submit"
-                    class="auth-submit">
-                저장하기
-            </button>
-
-        </form>
+        </div>
 
     </section>
+
+    <section class="page-heading">
+        <h2>내가 작성한 글</h2>
+    </section>
+
+    <section class="post-list" id="myPostList">
+    </section>
+
+    <p class="empty-result"
+       id="myPostsEmpty"
+       hidden>
+        아직 작성한 게시글이 없습니다.
+    </p>
 
 </main>
 
@@ -261,185 +124,155 @@
 
 <%@ include file="/common/auth-scripts.jspf" %>
 
+<script src="<%= contextPath %>/js/posts-store.js"></script>
+
 <script>
-    /*
-     * 국가를 "기타"로, 이메일 도메인을 "직접입력"으로 선택했을 때만
-     * 자유 입력란을 보여준다.
-     */
-
-    const countrySelect =
-        document.getElementById("profileCountry");
-
-    const countryOtherField =
-        document.getElementById("profileCountryOtherField");
-
-    countrySelect.addEventListener("change", function () {
-        countryOtherField.hidden = countrySelect.value !== "ETC";
-    });
-
-    const emailDomainSelect =
-        document.getElementById("profileEmailDomain");
-
-    const emailDomainOtherField =
-        document.getElementById("profileEmailDomainOtherField");
-
-    emailDomainSelect.addEventListener("change", function () {
-        emailDomainOtherField.hidden = emailDomainSelect.value !== "custom";
-    });
-
-
-    /*
-     * 계정(uid)별로 프로필을 localStorage에 저장/불러온다.
-     * 실제로는 Oracle DB의 회원 테이블에 저장될 정보다.
-     */
-
     const currentUser =
         mockAuth.getCurrentUser();
 
-    const PROFILE_STORAGE_KEY =
-        "trable_mock_profile_" + currentUser.id;
+    const COUNTRY_LABELS = {
+        KR: "한국",
+        JP: "일본",
+        ETC: "기타"
+    };
 
-    function loadProfile() {
+    async function loadProfileView() {
 
-        const saved =
-            JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || "null");
+        const doc = await firebase.firestore()
+            .collection("users")
+            .doc(currentUser.id)
+            .get();
 
-        document.getElementById("profileNickname").value =
-            (saved && saved.nickname) || currentUser.nickname;
+        const profile = doc.exists ? doc.data() : {};
 
-        document.getElementById("profileBio").value =
-            (saved && saved.bio) || "";
+        document.getElementById("profileViewNickname").textContent =
+            profile.nickname || currentUser.nickname;
 
-        document.getElementById("profileCountry").value =
-            (saved && saved.country) || "KR";
+        document.getElementById("profileViewBio").textContent =
+            profile.bio || "아직 소개가 없습니다.";
 
-        countryOtherField.hidden =
-            document.getElementById("profileCountry").value !== "ETC";
+        const countryLabel = profile.country === "ETC"
+            ? (profile.countryOther || "기타")
+            : COUNTRY_LABELS[profile.country] || "-";
 
-        document.getElementById("profileCountryOther").value =
-            (saved && saved.countryOther) || "";
+        document.getElementById("profileViewCountry").textContent =
+            "국가 " + countryLabel;
 
-        document.getElementById("profileEmailLocal").value =
-            (saved && saved.emailLocal) || "";
+        const email = profile.emailLocal
+            ? profile.emailLocal + "@" + (profile.emailDomain === "custom"
+                ? profile.emailDomainOther
+                : profile.emailDomain)
+            : currentUser.email;
 
-        document.getElementById("profileEmailDomain").value =
-            (saved && saved.emailDomain) || "naver.com";
+        document.getElementById("profileViewEmail").textContent =
+            "이메일 " + email;
 
-        emailDomainOtherField.hidden =
-            document.getElementById("profileEmailDomain").value !== "custom";
+        if (profile.photoUrl) {
+            document.getElementById("profileViewPhoto").src = profile.photoUrl;
+        }
 
-        document.getElementById("profileEmailDomainOther").value =
-            (saved && saved.emailDomainOther) || "";
+        const personalInfoParts = [];
 
-        document.getElementById("profileBirthday").value =
-            (saved && saved.birthday) || "";
+        if (profile.birthday) {
+            personalInfoParts.push(
+                "생일 " + profile.birthday
+                + (profile.birthdayVisibility === "private" ? " (비공개)" : " (공개)")
+            );
+        }
 
-        document.getElementById("profileName").value =
-            (saved && saved.name) || "";
+        if (profile.name) {
+            personalInfoParts.push(
+                "이름 " + profile.name
+                + (profile.nameVisibility === "private" ? " (비공개)" : " (공개)")
+            );
+        }
 
-        const birthdayVisibility =
-            (saved && saved.birthdayVisibility) || "public";
-
-        document.querySelector(
-            'input[name="birthdayVisibility"][value="' + birthdayVisibility + '"]'
-        ).checked = true;
-
-        const nameVisibility =
-            (saved && saved.nameVisibility) || "public";
-
-        document.querySelector(
-            'input[name="nameVisibility"][value="' + nameVisibility + '"]'
-        ).checked = true;
+        document.getElementById("profilePersonalInfo").textContent =
+            personalInfoParts.join(" · ");
 
     }
 
-    loadProfile();
+    loadProfileView();
 
 
-    const profileForm =
-        document.getElementById("profileForm");
+    /*
+     * 내가 작성한 글 목록 (본인 글이므로 항상 수정/삭제 버튼을 붙인다)
+     */
 
-    profileForm.addEventListener("submit", function (event) {
+    function escapeHtml(text) {
 
-        event.preventDefault();
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        const nickname =
-            document.getElementById("profileNickname").value.trim();
+    async function loadMyPosts() {
 
-        if (nickname === "") {
-            alert("닉네임을 입력해 주세요.");
+        const posts = await postsStore.getAllPosts();
+
+        const myPosts = posts.filter(function (post) {
+            return post.authorUid === currentUser.id;
+        });
+
+        const myPostList = document.getElementById("myPostList");
+
+        document.getElementById("myPostsEmpty").hidden = myPosts.length !== 0;
+
+        myPostList.innerHTML = myPosts.map(function (post) {
+
+            const displayDate =
+                post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
+
+            const detailUrl =
+                "<%= contextPath %>/posts/detail.jsp?id=" + post.id;
+
+            return '<article class="story-card">'
+                + '<a href="' + detailUrl + '" class="story-image">'
+                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="' + detailUrl + '">' + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span>' + displayDate + '</span>'
+                + '<span>조회 ' + (post.views || 0) + '</span>'
+                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '</div>'
+                + '<div class="detail-actions local-post-actions">'
+                + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
+                + '<button type="button" class="detail-delete-button" data-post-id="' + post.id + '">삭제</button>'
+                + '</div>'
+                + '</div></article>';
+
+        }).join("");
+
+    }
+
+    loadMyPosts();
+
+    document.getElementById("myPostList").addEventListener("click", async function (event) {
+
+        const deleteButton = event.target.closest(".detail-delete-button");
+
+        if (!deleteButton) {
             return;
         }
 
-        const emailLocal =
-            document.getElementById("profileEmailLocal").value.trim();
+        const isConfirmed =
+            confirm("이 게시글을 삭제하시겠습니까?");
 
-        if (emailLocal === "") {
-            alert("이메일 아이디를 입력해 주세요.");
+        if (!isConfirmed) {
             return;
         }
 
-        const emailDomain =
-            emailDomainSelect.value === "custom"
-                ? document.getElementById("profileEmailDomainOther").value.trim()
-                : emailDomainSelect.value;
+        const postId = deleteButton.dataset.postId;
+        const card = deleteButton.closest(".story-card");
+        const postTitle = card.querySelector("h3 a").textContent.trim();
 
-        if (emailDomain === "") {
-            alert("이메일 도메인을 입력해 주세요.");
-            return;
-        }
+        await postsStore.deletePost(postId, postTitle, currentUser.id, currentUser.nickname);
 
-        const country =
-            countrySelect.value;
-
-        const countryOther =
-            document.getElementById("profileCountryOther").value.trim();
-
-        if (country === "ETC" && countryOther === "") {
-            alert("국가를 직접 입력해 주세요.");
-            return;
-        }
-
-        const birthdayVisibility =
-            document.querySelector(
-                'input[name="birthdayVisibility"]:checked'
-            ).value;
-
-        const nameVisibility =
-            document.querySelector(
-                'input[name="nameVisibility"]:checked'
-            ).value;
-
-        const profile = {
-            nickname: nickname,
-            bio: document.getElementById("profileBio").value.trim(),
-            country: country,
-            countryOther: countryOther,
-            emailLocal: emailLocal,
-            emailDomain: emailDomainSelect.value,
-            emailDomainOther: document.getElementById("profileEmailDomainOther").value.trim(),
-            birthday: document.getElementById("profileBirthday").value,
-            birthdayVisibility: birthdayVisibility,
-            name: document.getElementById("profileName").value.trim(),
-            nameVisibility: nameVisibility
-        };
-
-        localStorage.setItem(
-            PROFILE_STORAGE_KEY,
-            JSON.stringify(profile)
-        );
-
-        /*
-         * 헤더에 표시되는 닉네임도 함께 갱신
-         */
-
-        mockAuth.login(Object.assign({}, currentUser, {
-            nickname: nickname
-        }));
-
-        alert("프로필이 저장되었습니다.");
-
-        location.reload();
+        loadMyPosts();
 
     });
 </script>

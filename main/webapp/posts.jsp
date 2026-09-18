@@ -242,6 +242,7 @@
 <%@ include file="/common/auth-scripts.jspf" %>
 
 <script src="<%= contextPath %>/js/posts-store.js"></script>
+<script src="<%= contextPath %>/js/author-info.js"></script>
 
 <script>
     const postList =
@@ -331,6 +332,8 @@
                 + '<span>조회 ' + (post.views || 0) + '</span>'
                 + '<span>댓글 ' + (post.comments || 0) + '</span>'
                 + '</div>'
+                + '<div class="author-info" data-author-uid="' + post.authorUid
+                + '" data-author-nickname="' + escapeHtml(post.authorNickname) + '"></div>'
                 + actionsHtml
                 + '</div>';
 
@@ -342,6 +345,8 @@
 
         sortPostList("latest");
         applyFilters();
+
+        initAuthorInfo(postList);
 
     }
 

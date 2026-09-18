@@ -73,6 +73,8 @@
                 <span id="detailComments"></span>
             </div>
 
+            <div class="author-info" id="detailAuthorInfo"></div>
+
         </div>
 
         <div class="detail-image">
@@ -121,6 +123,7 @@
 <%@ include file="/common/auth-scripts.jspf" %>
 
 <script src="<%= contextPath %>/js/posts-store.js"></script>
+<script src="<%= contextPath %>/js/author-info.js"></script>
 
 <script>
     const postId = "<%= postId %>";
@@ -160,6 +163,14 @@
             STYLE_LABELS[post.style] || post.style;
         document.getElementById("detailTitle").textContent = post.title;
         document.getElementById("detailAuthor").textContent = post.authorNickname;
+
+        const detailAuthorInfo =
+            document.getElementById("detailAuthorInfo");
+
+        detailAuthorInfo.dataset.authorUid = post.authorUid;
+        detailAuthorInfo.dataset.authorNickname = post.authorNickname;
+
+        initAuthorInfo(detailSection);
 
         const displayDate =
             post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";

@@ -351,6 +351,7 @@
 <%@ include file="/common/auth-scripts.jspf" %>
 
 <script src="<%= contextPath %>/js/posts-store.js"></script>
+<script src="<%= contextPath %>/js/author-info.js"></script>
 
 <script>
     /*
@@ -449,9 +450,14 @@
                 + '<span>' + (post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "") + '</span>'
                 + '<span>조회 ' + (post.views || 0) + '</span>'
                 + '<span>댓글 ' + (post.comments || 0) + '</span>'
-                + '</div></div></article>';
+                + '</div>'
+                + '<div class="author-info" data-author-uid="' + post.authorUid
+                + '" data-author-nickname="' + escapeHtml(post.authorNickname) + '"></div>'
+                + '</div></article>';
 
         }).join("");
+
+        initAuthorInfo(container);
 
         for (let i = countryPosts.length; i < 3; i++) {
 
