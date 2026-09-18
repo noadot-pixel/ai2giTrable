@@ -1643,6 +1643,17 @@
     background-color: var(--light-blue);
 }
 
+.write-field-note {
+    margin-top: 4px;
+    color: var(--gray-color);
+    font-size: 12px;
+}
+
+.write-field input[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 /* =========================
    게시글 작성자 정보 (author-info.js)
 ========================= */

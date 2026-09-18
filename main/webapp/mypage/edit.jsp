@@ -92,9 +92,14 @@
                     <input type="file"
                            id="profilePhoto"
                            name="profilePhoto"
-                           accept="image/*">
+                           accept="image/*"
+                           disabled>
 
                 </div>
+
+                <p class="write-field-note">
+                    프로필 이미지 업로드는 Firebase Storage 설정 완료 후 열릴 예정입니다.
+                </p>
 
             </div>
 
