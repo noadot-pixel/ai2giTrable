@@ -1102,3 +1102,109 @@
     }
 }
 
+/* =========================
+   게시글 상세 (posts/detail.jsp)
+========================= */
+
+.detail-section {
+    max-width: 860px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+}
+
+.detail-header {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.detail-style-tag {
+    padding: 5px 11px;
+    color: var(--gray-color);
+    border-radius: 15px;
+    background-color: var(--light-blue);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.detail-header h1 {
+    margin-bottom: 14px;
+    color: var(--navy);
+    font-size: 30px;
+    line-height: 1.4;
+}
+
+.detail-image {
+    overflow: hidden;
+    margin-bottom: 28px;
+    border-radius: 16px;
+}
+
+.detail-image img {
+    width: 100%;
+    max-height: 460px;
+    object-fit: cover;
+}
+
+.detail-body {
+    margin-bottom: 32px;
+    color: var(--text-color);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.detail-body p + p {
+    margin-top: 16px;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.detail-edit-button,
+.detail-delete-button {
+    padding: 10px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.detail-edit-button {
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.detail-edit-button:hover {
+    background-color: var(--light-blue);
+}
+
+.detail-delete-button {
+    color: #d64545;
+    border-color: #f0c6c6;
+}
+
+.detail-delete-button:hover {
+    background-color: #fdf0f0;
+}
+
+.detail-back a {
+    color: var(--gray-color);
+    font-size: 14px;
+}
+
+.detail-back a:hover {
+    color: var(--blue);
+}
+

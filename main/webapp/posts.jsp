@@ -201,7 +201,7 @@
                  data-date="2026-09-10"
                  data-views="892">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=1"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/jeju.jpg"
@@ -215,7 +215,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=1">
                         제주도 2박 3일 힐링 여행
                     </a>
                 </h3>
@@ -242,7 +242,7 @@
                  data-date="2026-09-05"
                  data-views="1560">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=2"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/korea.jpg"
@@ -256,7 +256,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=2">
                         부산 해운대 맛집 총정리
                     </a>
                 </h3>
@@ -283,7 +283,7 @@
                  data-date="2026-09-14"
                  data-views="430">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=3"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/korea.jpg"
@@ -297,7 +297,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=3">
                         서울 근교 당일치기 액티비티 코스
                     </a>
                 </h3>
@@ -324,7 +324,7 @@
                  data-date="2026-09-12"
                  data-views="1245">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=4"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/fukuoka.jpg"
@@ -338,7 +338,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=4">
                         후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행
                     </a>
                 </h3>
@@ -365,7 +365,7 @@
                  data-date="2026-09-01"
                  data-views="980">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=5"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/japan.jpg"
@@ -379,7 +379,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=5">
                         오사카 쇼핑 스팟 완전 정리
                     </a>
                 </h3>
@@ -406,7 +406,7 @@
                  data-date="2026-09-13"
                  data-views="2210">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=6"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/japan.jpg"
@@ -420,7 +420,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=6">
                         도쿄 디즈니랜드 완전 정복기
                     </a>
                 </h3>
@@ -447,7 +447,7 @@
                  data-date="2026-09-08"
                  data-views="2103">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=7"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/barcelona.jpg"
@@ -461,7 +461,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=7">
                         처음 떠나는 유럽, 스페인 바르셀로나
                     </a>
                 </h3>
@@ -488,7 +488,7 @@
                  data-date="2026-08-30"
                  data-views="1670">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=8"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/world.jpg"
@@ -502,7 +502,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=8">
                         방콕 길거리 맛집 탐방기
                     </a>
                 </h3>
@@ -529,7 +529,7 @@
                  data-date="2026-09-03"
                  data-views="760">
 
-            <a href="#"
+            <a href="<%= contextPath %>/posts/detail.jsp?id=9"
                class="story-image">
 
                 <img src="<%= contextPath %>/images/world.jpg"
@@ -543,7 +543,7 @@
                 </span>
 
                 <h3>
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=9">
                         파리에서 놓치면 안 되는 쇼핑 리스트
                     </a>
                 </h3>

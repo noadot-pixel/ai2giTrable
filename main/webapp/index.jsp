@@ -244,7 +244,7 @@
                 <article class="story-card"
                          data-date="2026-09-10">
 
-                    <a href="#"
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=1"
                        class="story-image">
 
                         <img src="<%= contextPath %>/images/jeju.jpg"
@@ -258,7 +258,7 @@
                         </span>
 
                         <h3>
-                            <a href="#">
+                            <a href="<%= contextPath %>/posts/detail.jsp?id=1">
                                 제주도 2박 3일 힐링 여행
                             </a>
                         </h3>
@@ -340,7 +340,7 @@
                 <article class="story-card"
                          data-date="2026-09-12">
 
-                    <a href="#"
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=4"
                        class="story-image">
 
                         <img src="<%= contextPath %>/images/fukuoka.jpg"
@@ -354,7 +354,7 @@
                         </span>
 
                         <h3>
-                            <a href="#">
+                            <a href="<%= contextPath %>/posts/detail.jsp?id=4">
                                 후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행
                             </a>
                         </h3>
@@ -435,7 +435,7 @@
                 <article class="story-card"
                          data-date="2026-09-08">
 
-                    <a href="#"
+                    <a href="<%= contextPath %>/posts/detail.jsp?id=7"
                        class="story-image">
 
                         <img src="<%= contextPath %>/images/barcelona.jpg"
@@ -449,7 +449,7 @@
                         </span>
 
                         <h3>
-                            <a href="#">
+                            <a href="<%= contextPath %>/posts/detail.jsp?id=7">
                                 처음 떠나는 유럽, 스페인 바르셀로나
                             </a>
                         </h3>
