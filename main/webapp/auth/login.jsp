@@ -26,24 +26,8 @@
 
 <body>
 
-<!-- =========================
-     상단 헤더 (로그인 화면은 로고만 표시)
-========================= -->
-
-<header class="header">
-
-    <div class="header-inner">
-
-        <a href="<%= contextPath %>/index.jsp"
-           class="top-logo">
-
-            <img src="<%= contextPath %>/images/logo.png"
-                 alt="여행만들기 로고">
-        </a>
-
-    </div>
-
-</header>
+<% String activeNav = ""; %>
+<%@ include file="/common/header.jspf" %>
 
 <main>
 
@@ -104,15 +88,9 @@
 
 </main>
 
-<footer class="footer">
+<%@ include file="/common/footer.jspf" %>
 
-    <p class="copyright">
-        © 2026 여행만들기. All rights reserved.
-    </p>
-
-</footer>
-
-<script src="<%= contextPath %>/js/mock-auth.js"></script>
+<%@ include file="/common/auth-scripts.jspf" %>
 
 <script>
     /*

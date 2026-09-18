@@ -30,63 +30,8 @@
      상단 헤더
 ========================= -->
 
-<header class="header">
-
-    <div class="header-inner">
-
-        <a href="<%= contextPath %>/index.jsp"
-           class="top-logo">
-
-            <img src="<%= contextPath %>/images/logo.png"
-                 alt="여행만들기 로고">
-        </a>
-
-        <nav class="navigation">
-
-            <a href="<%= contextPath %>/index.jsp">
-                홈
-            </a>
-
-            <a href="<%= contextPath %>/posts.jsp"
-               class="active">
-                여행지
-            </a>
-
-            <a href="<%= contextPath %>/posts.jsp">
-                여행후기
-            </a>
-
-            <a href="#">
-                커뮤니티
-            </a>
-
-            <a href="#">
-                여행꿀팁
-            </a>
-
-            <a href="#">
-                Q&amp;A
-            </a>
-
-        </nav>
-
-        <div class="member-menu"
-             id="memberMenu">
-
-            <a href="<%= contextPath %>/auth/login.jsp">
-                로그인
-            </a>
-
-            <a href="#"
-               class="join-button">
-                회원가입
-            </a>
-
-        </div>
-
-    </div>
-
-</header>
+<% String activeNav = "posts"; %>
+<%@ include file="/common/header.jspf" %>
 
 <main>
 
@@ -661,93 +606,11 @@
      하단 푸터
 ========================= -->
 
-<footer class="footer">
+<%@ include file="/common/footer.jspf" %>
 
-    <div class="footer-inner">
-
-        <div class="footer-logo-area">
-
-            <a href="<%= contextPath %>/index.jsp"
-               class="bottom-logo">
-
-                <img src="<%= contextPath %>/images/logo.png"
-                     alt="여행만들기 로고">
-            </a>
-
-            <p>
-                함께 만드는, 더 넓은 여행의 세상
-            </p>
-
-        </div>
-
-        <div class="footer-menu">
-
-            <strong>여행만들기</strong>
-
-            <a href="#">소개</a>
-            <a href="#">이용약관</a>
-            <a href="#">개인정보처리방침</a>
-
-        </div>
-
-        <div class="footer-menu">
-
-            <strong>고객지원</strong>
-
-            <a href="#">공지사항</a>
-            <a href="#">자주 묻는 질문</a>
-            <a href="#">문의하기</a>
-
-        </div>
-
-    </div>
-
-    <p class="copyright">
-        © 2026 여행만들기. All rights reserved.
-    </p>
-
-</footer>
-
-<script src="<%= contextPath %>/js/mock-auth.js"></script>
+<%@ include file="/common/auth-scripts.jspf" %>
 
 <script>
-    /*
-     * 로그인 상태에 따라 헤더 계정 메뉴를 바꿔 표시
-     * (localStorage 기반 목업 로그인)
-     */
-
-    (function renderMemberMenu() {
-
-        const memberMenu =
-            document.getElementById("memberMenu");
-
-        const currentUser =
-            mockAuth.getCurrentUser();
-
-        if (!currentUser) {
-            return;
-        }
-
-        memberMenu.innerHTML =
-            '<span class="member-nickname">'
-            + currentUser.nickname
-            + '님</span>'
-            + '<a href="#" id="logoutLink">로그아웃</a>';
-
-        document.getElementById("logoutLink")
-            .addEventListener("click", function (event) {
-
-                event.preventDefault();
-
-                mockAuth.logout();
-
-                location.reload();
-
-            });
-
-    })();
-
-
     const postList =
         document.getElementById("postList");
 

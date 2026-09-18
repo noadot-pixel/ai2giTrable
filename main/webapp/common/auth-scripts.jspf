@@ -1,0 +1,42 @@
+<%@ page pageEncoding="UTF-8" %>
+<%--
+    로그인 상태에 따라 헤더 계정 메뉴(#memberMenu)를 바꿔주는 공통 스크립트.
+    사용하는 페이지는 include 전에 아래 변수를 선언해야 한다.
+
+    String contextPath = request.getContextPath();
+--%>
+
+<script src="<%= contextPath %>/js/mock-auth.js"></script>
+
+<script>
+    (function renderMemberMenu() {
+
+        const memberMenu =
+            document.getElementById("memberMenu");
+
+        const currentUser =
+            mockAuth.getCurrentUser();
+
+        if (!memberMenu || !currentUser) {
+            return;
+        }
+
+        memberMenu.innerHTML =
+            '<span class="member-nickname">'
+            + currentUser.nickname
+            + '님</span>'
+            + '<a href="#" id="logoutLink">로그아웃</a>';
+
+        document.getElementById("logoutLink")
+            .addEventListener("click", function (event) {
+
+                event.preventDefault();
+
+                mockAuth.logout();
+
+                location.reload();
+
+            });
+
+    })();
+</script>
