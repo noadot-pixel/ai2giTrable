@@ -59,7 +59,7 @@
         return ref.id;
     }
 
-    async function updatePost(id, data) {
+    async function updatePost(id, data, actorUid, actorNickname) {
 
         await db().collection("posts").doc(id).update(data);
 
@@ -67,8 +67,8 @@
             type: "UPDATE",
             postId: id,
             postTitle: data.title,
-            actorUid: data.authorUid,
-            actorNickname: data.authorNickname
+            actorUid: actorUid,
+            actorNickname: actorNickname
         });
     }
 

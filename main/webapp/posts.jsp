@@ -271,7 +271,8 @@
 
     /*
      * Firestore의 posts 컬렉션을 읽어 카드로 렌더링한다.
-     * 작성자 본인 글에만 수정/삭제 버튼이 붙는다.
+     * 작성자 본인 글, 또는 관리자 계정이면 수정/삭제 버튼이 붙는다.
+     * (기존 목록 화면에 관리자용 기능을 표시하는 방식 - 별도 관리 페이지 없음)
      */
 
     async function loadPosts() {
@@ -281,12 +282,18 @@
         const currentUser =
             mockAuth.getCurrentUser();
 
+        const isAdminUser =
+            await mockAuth.isAdmin();
+
         postList.innerHTML = "";
 
         posts.forEach(function (post) {
 
             const isMine =
                 currentUser && currentUser.id === post.authorUid;
+
+            const canManage =
+                isMine || isAdminUser;
 
             const article =
                 document.createElement("article");
@@ -301,7 +308,7 @@
             const displayDate =
                 post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
 
-            const actionsHtml = isMine
+            const actionsHtml = canManage
                 ? '<div class="detail-actions local-post-actions">'
                     + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
                     + '<button type="button" class="detail-delete-button" data-post-id="' + post.id + '">삭제</button>'

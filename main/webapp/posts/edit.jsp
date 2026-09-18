@@ -354,16 +354,23 @@
                 ETC: "world.jpg"
             };
 
+            /*
+             * 글의 작성자(authorUid/authorNickname)는 바꾸지 않는다.
+             * 로그의 작업자는 실제로 이 수정을 실행한 사람(관리자일 수도 있음)이어야
+             * 하므로 targetPost의 작성자가 아니라 현재 로그인한 사용자로 남긴다.
+             */
+
+            const actingUser =
+                mockAuth.getCurrentUser();
+
             await postsStore.updatePost(targetPost.id, {
                 title: title,
                 body: body,
                 country: selectedCountry,
                 countryLabel: selectedCountryLabel,
                 style: selectedStyle,
-                image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry],
-                authorUid: targetPost.authorUid,
-                authorNickname: targetPost.authorNickname
-            });
+                image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
+            }, actingUser.id, actingUser.nickname);
 
             alert("게시글이 수정되었습니다.");
 
