@@ -92,13 +92,12 @@
                     <input type="file"
                            id="profilePhoto"
                            name="profilePhoto"
-                           accept="image/*"
-                           disabled>
+                           accept="image/*">
 
                 </div>
 
                 <p class="write-field-note">
-                    프로필 이미지 업로드는 Firebase Storage 설정 완료 후 열릴 예정입니다.
+                    5MB 이하 이미지 파일만 업로드할 수 있습니다.
                 </p>
 
             </div>
@@ -497,10 +496,31 @@
 
         if (selectedPhotoFile) {
 
+            /*
+             * Storage 보안 규칙은 mockAuth(localStorage)가 아니라
+             * 실제 Firebase 인증 상태(firebase.auth().currentUser)를 검사한다.
+             * 둘이 어긋나 있으면(예: 브라우저의 로그인 세션이 끊긴 경우)
+             * 업로드 경로의 uid와 실제 인증된 uid가 달라 거부된다.
+             */
+
+            const firebaseUser = firebase.auth().currentUser;
+
+            if (!firebaseUser || firebaseUser.uid !== currentUser.id) {
+
+                alert(
+                    "로그인 세션이 만료되어 이미지를 업로드할 수 없습니다. "
+                    + "다시 로그인한 뒤 시도해 주세요."
+                );
+
+                location.href = "<%= contextPath %>/auth/login.jsp";
+
+                return;
+            }
+
             try {
 
                 const storageRef =
-                    firebase.storage().ref("profile-images/" + currentUser.id);
+                    firebase.storage().ref("profile-images/" + firebaseUser.uid);
 
                 await storageRef.put(selectedPhotoFile);
 
