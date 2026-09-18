@@ -24,25 +24,8 @@
                 홈
             </a>
 
-            <a href="<%= contextPath %>/posts.jsp"
-               class="<%= "posts".equals(activeNav) ? "active" : "" %>">
-                여행지
-            </a>
-
-            <a href="<%= contextPath %>/posts.jsp">
-                여행후기
-            </a>
-
-            <a href="#">
+             <a href="<%= contextPath %>/posts.jsp">
                 커뮤니티
-            </a>
-
-            <a href="#">
-                여행꿀팁
-            </a>
-
-            <a href="#">
-                Q&amp;A
             </a>
 
         </nav>

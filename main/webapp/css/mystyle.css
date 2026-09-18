@@ -54,7 +54,6 @@
     display: flex;
     align-items: center;
     gap: 28px;
-    flex: 1;
 }
 
 .navigation a {
@@ -85,6 +84,7 @@
     display: flex;
     align-items: center;
     gap: 18px;
+    margin-left: auto;
     font-size: 14px;
 }
 
