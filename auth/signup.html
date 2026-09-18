@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
     GitHub Pages용 정적 사본입니다. (자동 생성 파일: 직접 고치지 마세요)
-    원본은 main/webapp/auth/login.jsp 이며, 원본을 고친 뒤 저장소 루트에서
+    원본은 main/webapp/auth/signup.jsp 이며, 원본을 고친 뒤 저장소 루트에서
     `python tools/build-static.py` 를 실행하면 이 파일이 다시 만들어집니다.
 -->
 <html lang="ko">
@@ -12,7 +12,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>로그인 - 여행만들기</title>
+    <title>회원가입 - 여행만들기</title>
 
     <link rel="stylesheet"
           href="../main/webapp/css/common.css">
@@ -76,10 +76,9 @@
 <main>
 
     <!-- =========================
-         로그인
-         Firebase Authentication(이메일/비밀번호)으로 실제 계정을
-         검증하고, 로그인 상태 표시는 그대로 localStorage(mockAuth)를 사용한다.
-         추후 Oracle JDBC + 세션 기반 로그인으로 교체될 예정.
+         회원가입 (목업)
+         실제 계정 생성/DB 저장은 하지 않고, 입력 검사 후 "가입 완료" alert만 띄운 뒤
+         로그인 화면으로 이동한다. 추후 Oracle JDBC 기반 회원 테이블로 교체될 예정.
     ========================== -->
 
     <section class="auth-section">
@@ -95,13 +94,13 @@
                     </p>
 
                     <h1>
-                        다시 여행을<br>
-                        이어가 볼까요?
+                        여행만들기와 함께<br>
+                        첫 이야기를 시작해요
                     </h1>
 
                     <p>
-                        여행 기록을 남기고,<br>
-                        새로운 여행 이야기를 만나보세요.
+                        가입하면 여행 이야기를 작성하고<br>
+                        나만의 기록을 남길 수 있어요.
                     </p>
 
                     <div class="auth-visual-tags" aria-hidden="true">
@@ -119,42 +118,66 @@
                     <div class="auth-title-area">
                         <span class="auth-title-mark">✈</span>
 
-                        <h2>로그인</h2>
+                        <h2>회원가입</h2>
 
                         <p class="auth-description">
-                            여행만들기 계정으로 로그인하세요.
+                            기본 정보를 입력하고 여행만들기를 시작하세요.
                         </p>
                     </div>
 
-                    <form id="loginForm">
+                    <form id="signupForm">
 
                         <div class="auth-field">
-                            <label for="loginEmail">
+                            <label for="signupNickname">
+                                닉네임
+                            </label>
+
+                            <input type="text"
+                                   id="signupNickname"
+                                   name="signupNickname"
+                                   placeholder="사용할 닉네임을 입력해 주세요"
+                                   autocomplete="nickname">
+                        </div>
+
+                        <div class="auth-field">
+                            <label for="signupEmail">
                                 이메일
                             </label>
 
                             <input type="email"
-                                   id="loginEmail"
-                                   name="loginEmail"
+                                   id="signupEmail"
+                                   name="signupEmail"
                                    placeholder="이메일을 입력해 주세요"
                                    autocomplete="username">
                         </div>
 
                         <div class="auth-field">
-                            <label for="loginPassword">
+                            <label for="signupPassword">
                                 비밀번호
                             </label>
 
                             <input type="password"
-                                   id="loginPassword"
-                                   name="loginPassword"
-                                   placeholder="비밀번호를 입력해 주세요"
-                                   autocomplete="current-password">
+                                   id="signupPassword"
+                                   name="signupPassword"
+                                   placeholder="6자 이상 입력해 주세요"
+                                   autocomplete="new-password">
+                        </div>
+
+                        <div class="auth-field">
+                            <label for="signupPasswordConfirm">
+                                비밀번호 확인
+                            </label>
+
+                            <input type="password"
+                                   id="signupPasswordConfirm"
+                                   name="signupPasswordConfirm"
+                                   placeholder="비밀번호를 다시 입력해 주세요"
+                                   autocomplete="new-password">
                         </div>
 
                         <button type="submit"
                                 class="auth-submit">
-                            로그인
+                            회원가입
                         </button>
 
                     </form>
@@ -164,7 +187,7 @@
                     </div>
 
                     <div class="auth-links">
-                        <a href="../auth/signup.html">회원가입</a>
+                        <a href="../auth/login.html">로그인</a>
                         <span aria-hidden="true"></span>
                         <a href="../index.html">메인으로 돌아가기</a>
                     </div>
@@ -356,7 +379,6 @@
 <script>
     /*
      * 이미 로그인되어 있으면 메인으로 바로 이동
-     * (mockAuth는 화면 표시용 로그인 상태만 관리한다)
      */
 
     if (mockAuth.isLoggedIn()) {
@@ -366,68 +388,65 @@
 
 <script>
     /*
-     * Firebase Authentication(이메일/비밀번호)으로 실제 계정을 검증한다.
-     * Firebase 콘솔의 Authentication > Users에 미리 등록된 계정만 로그인 가능.
-     * 로그인에 성공하면 화면 표시용 mockAuth(localStorage)에도 반영한다.
+     * 회원가입 목업: 입력값만 검사하고, 가입이 완료된 것처럼 alert를 띄운 뒤
+     * 로그인 화면으로 이동한다. (Firebase 계정 생성, DB 기록은 하지 않는다.)
      */
 
-    const loginForm =
-        document.getElementById("loginForm");
+    const signupForm =
+        document.getElementById("signupForm");
 
-    const loginEmailInput =
-        document.getElementById("loginEmail");
+    const nicknameInput =
+        document.getElementById("signupNickname");
 
-    const loginPasswordInput =
-        document.getElementById("loginPassword");
+    const emailInput =
+        document.getElementById("signupEmail");
 
-    const LOGIN_ERROR_MESSAGES = {
-        "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
-        "auth/user-not-found": "등록되지 않은 계정입니다.",
-        "auth/wrong-password": "비밀번호가 올바르지 않습니다.",
-        "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않습니다.",
-        "auth/too-many-requests": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요."
-    };
+    const passwordInput =
+        document.getElementById("signupPassword");
 
-    loginForm.addEventListener("submit", function (event) {
+    const passwordConfirmInput =
+        document.getElementById("signupPasswordConfirm");
+
+    signupForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
 
-        const loginEmail =
-            loginEmailInput.value.trim();
+        const nickname =
+            nicknameInput.value.trim();
 
-        const loginPassword =
-            loginPasswordInput.value.trim();
+        const email =
+            emailInput.value.trim();
 
-        if (loginEmail === "" || loginPassword === "") {
+        const password =
+            passwordInput.value;
 
-            alert("이메일과 비밀번호를 입력해 주세요.");
+        const passwordConfirm =
+            passwordConfirmInput.value;
+
+        if (nickname === "" || email === "" || password === "" || passwordConfirm === "") {
+
+            alert("모든 항목을 입력해 주세요.");
 
             return;
         }
 
-        firebase.auth().signInWithEmailAndPassword(loginEmail, loginPassword)
-            .then(function (userCredential) {
+        if (password !== passwordConfirm) {
 
-                const firebaseUser = userCredential.user;
+            alert("비밀번호가 서로 일치하지 않습니다.");
 
-                mockAuth.login({
-                    id: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    nickname: firebaseUser.displayName || firebaseUser.email.split("@")[0]
-                });
+            return;
+        }
 
-                location.href = "../index.html";
+        if (password.length < 6) {
 
-            })
-            .catch(function (error) {
+            alert("비밀번호는 6자 이상이어야 합니다.");
 
-                const message =
-                    LOGIN_ERROR_MESSAGES[error.code]
-                    || "로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+            return;
+        }
 
-                alert(message);
+        alert("회원가입이 완료되었습니다. 로그인해 주세요.");
 
-            });
+        location.href = "../auth/login.html";
 
     });
 </script>

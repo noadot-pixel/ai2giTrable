@@ -435,7 +435,7 @@
         container.innerHTML = countryPosts.map(function (post) {
 
             const detailUrl =
-                "<%= contextPath %>/posts/detail.jsp?id=" + post.id;
+                "<%= contextPath %>/posts/detail.jsp?id=" + encodeURIComponent(post.id);
 
             return '<article class="story-card">'
                 + '<a href="' + detailUrl + '" class="story-image">'
@@ -446,19 +446,20 @@
                 + '<h3><a href="' + detailUrl + '">' + escapeHtml(post.title) + '</a></h3>'
                 + '<p>' + escapeHtml(post.body) + '</p>'
                 + '<div class="story-information">'
-                + '<span>' + escapeHtml(post.authorNickname) + '</span>'
-                + '<span>' + (post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "") + '</span>'
-                + '<span>조회 ' + (post.views || 0) + '</span>'
-                + '<span>좋아요 ' + (post.likes || 0) + '</span>'
-                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '<span data-nickname-uid="' + escapeHtml(post.authorUid) + '">' + escapeHtml(post.authorNickname) + '</span>'
+                + '<span>' + escapeHtml(post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "") + '</span>'
+                + '<span>조회 ' + (Number(post.views) || 0) + '</span>'
+                + '<span>좋아요 ' + (Number(post.likes) || 0) + '</span>'
+                + '<span>댓글 ' + (Number(post.comments) || 0) + '</span>'
                 + '</div>'
-                + '<div class="author-info" data-author-uid="' + post.authorUid
+                + '<div class="author-info" data-author-uid="' + escapeHtml(post.authorUid)
                 + '" data-author-nickname="' + escapeHtml(post.authorNickname) + '"></div>'
                 + '</div></article>';
 
         }).join("");
 
         initAuthorInfo(container);
+        resolveNicknames(container);
 
         for (let i = countryPosts.length; i < 3; i++) {
 

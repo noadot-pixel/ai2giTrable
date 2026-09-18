@@ -233,9 +233,9 @@
                 log.time ? log.time.slice(0, 16).replace("T", " ") : "";
 
             return "<tr>"
-                + "<td><span class=\"admin-log-type admin-log-" + log.type.toLowerCase() + "\">"
-                + LOG_TYPE_LABEL[log.type] + "</span></td>"
-                + "<td>" + displayTime + "</td>"
+                + "<td><span class=\"admin-log-type admin-log-" + escapeHtml(String(log.type).toLowerCase()) + "\">"
+                + escapeHtml(LOG_TYPE_LABEL[log.type] || String(log.type)) + "</span></td>"
+                + "<td>" + escapeHtml(displayTime) + "</td>"
                 + "<td>" + escapeHtml(log.postTitle || "") + "</td>"
                 + "<td>" + escapeHtml(log.actorNickname || "") + "</td>"
                 + "</tr>";

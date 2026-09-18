@@ -1,12 +1,9 @@
-<%@ page language="java"
-    contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" %>
-
-<%
-    String contextPath = request.getContextPath();
-%>
-
 <!DOCTYPE html>
+<!--
+    GitHub Pages용 정적 사본입니다. (자동 생성 파일: 직접 고치지 마세요)
+    원본은 main/webapp/mypage.jsp 이며, 원본을 고친 뒤 저장소 루트에서
+    `python tools/build-static.py` 를 실행하면 이 파일이 다시 만들어집니다.
+-->
 <html lang="ko">
 
 <head>
@@ -18,15 +15,15 @@
     <title>마이페이지 - 여행만들기</title>
 
     <link rel="stylesheet"
-          href="<%= contextPath %>/css/common.css">
+          href="main/webapp/css/common.css">
 
     <link rel="stylesheet"
-          href="<%= contextPath %>/css/mystyle.css">
+          href="main/webapp/css/mystyle.css">
 </head>
 
 <body>
 
-<script src="<%= contextPath %>/js/mock-auth.js"></script>
+<script src="main/webapp/js/mock-auth.js"></script>
 
 <script>
     /*
@@ -40,13 +37,60 @@
         );
 
         location.href = shouldGoToLogin
-            ? "<%= contextPath %>/auth/login.jsp"
-            : "<%= contextPath %>/index.jsp";
+            ? "auth/login.html"
+            : "index.html";
     }
 </script>
 
-<% String activeNav = ""; %>
-<%@ include file="/common/header.jspf" %>
+<header class="header">
+
+    <div class="header-inner">
+
+        <a href="index.html"
+           class="top-logo">
+
+            <img src="main/webapp/images/logo.png"
+                 alt="여행만들기 로고">
+        </a>
+
+        <nav class="navigation">
+
+            <a href="index.html"
+               class="">
+                홈
+            </a>
+
+             <a href="posts.html">
+                커뮤니티
+            </a>
+
+        </nav>
+
+        <div class="member-menu">
+
+            <a href="posts/write.html"
+               class="write-link">
+                글쓰기
+            </a>
+
+            <span id="memberMenu">
+
+                <a href="auth/login.html">
+                    로그인
+                </a>
+
+                <a href="auth/signup.html"
+                   class="join-button">
+                    회원가입
+                </a>
+
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
 
 <main>
 
@@ -59,7 +103,7 @@
     <section class="page-heading">
 
         <p class="breadcrumb">
-            <a href="<%= contextPath %>/index.jsp">홈</a>
+            <a href="index.html">홈</a>
             〉 마이페이지
         </p>
 
@@ -77,7 +121,7 @@
 
             <img id="profileViewPhoto"
                  class="profile-photo-large"
-                 src="<%= contextPath %>/images/logo.png"
+                 src="main/webapp/images/logo.png"
                  alt="프로필 이미지">
 
             <div class="profile-card-info">
@@ -94,7 +138,7 @@
                 <div class="profile-personal" id="profilePersonalInfo">
                 </div>
 
-                <a href="<%= contextPath %>/mypage/edit.jsp"
+                <a href="mypage/edit.html"
                    class="auth-submit profile-edit-button">
                     정보 수정
                 </a>
@@ -133,12 +177,182 @@
 
 </main>
 
-<%@ include file="/common/footer.jspf" %>
+<footer class="footer">
 
-<%@ include file="/common/auth-scripts.jspf" %>
+    <div class="footer-inner">
 
-<script src="<%= contextPath %>/js/posts-store.js"></script>
-<script src="<%= contextPath %>/js/author-info.js"></script>
+        <div class="footer-logo-area">
+
+            <a href="index.html"
+               class="bottom-logo">
+
+                <img src="main/webapp/images/logo.png"
+                     alt="여행만들기 로고">
+            </a>
+
+            <p>
+                함께 만드는, 더 넓은 여행의 세상
+            </p>
+
+        </div>
+
+        <div class="footer-menu">
+
+            <strong>여행만들기</strong>
+
+            <a href="#" class="footer-placeholder-link" data-message="서비스 소개 페이지는 준비 중입니다.">소개</a>
+            <a href="#" class="footer-placeholder-link" data-message="이용약관 페이지는 준비 중입니다.">이용약관</a>
+            <a href="#" class="footer-placeholder-link" data-message="개인정보처리방침 페이지는 준비 중입니다.">개인정보처리방침</a>
+
+        </div>
+
+        <div class="footer-menu">
+
+            <strong>고객지원</strong>
+
+            <a href="#" class="footer-placeholder-link" data-message="등록된 공지사항이 없습니다.">공지사항</a>
+            <a href="#" class="footer-placeholder-link" data-message="자주 묻는 질문 페이지는 준비 중입니다.">자주 묻는 질문</a>
+            <a href="#" class="footer-placeholder-link" data-message="문의하기 기능은 준비 중입니다. 급한 문의는 이메일로 남겨주세요.">문의하기</a>
+
+        </div>
+
+    </div>
+
+    <p class="copyright">
+        © 2026 여행만들기. All rights reserved.
+    </p>
+
+</footer>
+
+<script>
+    document.querySelectorAll(".footer-placeholder-link").forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            alert(link.dataset.message);
+
+        });
+
+    });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAythcpdfR-tuSQEzFkw8EKRwNEfnC7bJE",
+        authDomain: "ai2gi-project-01.firebaseapp.com",
+        projectId: "ai2gi-project-01",
+        storageBucket: "ai2gi-project-01.firebasestorage.app",
+        messagingSenderId: "34655357322",
+        appId: "1:34655357322:web:d7f146b0ccd5bc15f3a073"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const authReadyStartedAt = performance.now();
+
+    window.authReady = new Promise(function (resolve) {
+
+        const unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
+
+            unsubscribe();
+
+            console.log(
+                "[authReady] 세션 복원 완료 ("
+                + Math.round(performance.now() - authReadyStartedAt) + "ms), user ="
+                + (user ? " " + user.uid : " null")
+            );
+
+            resolve(user);
+
+        });
+
+    });
+</script>
+
+<script src="main/webapp/js/mock-auth.js"></script>
+
+<script>
+    function escapeMenuText(text) {
+
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    (async function renderMemberMenu() {
+
+        const memberMenu =
+            document.getElementById("memberMenu");
+
+        const currentUser =
+            mockAuth.getCurrentUser();
+
+        if (!memberMenu || !currentUser) {
+            return;
+        }
+
+        /*
+         * 로그인 정보의 닉네임은 이 브라우저(localStorage)에만 저장돼 있어서,
+         * 다른 곳에서 닉네임을 바꿨다면 users 문서의 최신 닉네임으로 맞춘다.
+         */
+
+        try {
+
+            const profileDoc = await firebase.firestore()
+                .collection("users").doc(currentUser.id).get();
+
+            const savedNickname =
+                profileDoc.exists ? profileDoc.data().nickname : "";
+
+            if (savedNickname && savedNickname !== currentUser.nickname) {
+                currentUser.nickname = savedNickname;
+                mockAuth.login(currentUser);
+            }
+
+        } catch (error) {
+            console.warn("닉네임을 동기화하지 못했습니다(무시):", error.code || error.message);
+        }
+
+        const isAdmin =
+            await mockAuth.isAdmin();
+
+        const adminLinkHtml = isAdmin
+            ? '<a href="admin/index.html">관리자</a>'
+            : '';
+
+        memberMenu.innerHTML =
+            adminLinkHtml
+            + '<a href="mypage.html">마이페이지</a>'
+            + '<span class="member-nickname">'
+            + escapeMenuText(currentUser.nickname)
+            + '님</span>'
+            + '<a href="#" id="logoutLink">로그아웃</a>';
+
+        document.getElementById("logoutLink")
+            .addEventListener("click", function (event) {
+
+                event.preventDefault();
+
+                mockAuth.logout();
+
+                location.reload();
+
+            });
+
+    })();
+</script>
+
+<script src="main/webapp/js/posts-store.js"></script>
+<script src="main/webapp/js/author-info.js"></script>
 
 <script>
     const currentUser =
@@ -208,7 +422,6 @@
 
     loadProfileView();
 
-
     /*
      * 내가 작성한 글 목록 (본인 글이므로 항상 수정/삭제 버튼을 붙인다)
      */
@@ -238,11 +451,11 @@
                 post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
 
             const detailUrl =
-                "<%= contextPath %>/posts/detail.jsp?id=" + encodeURIComponent(post.id);
+                "posts/detail.html?id=" + encodeURIComponent(post.id);
 
             return '<article class="story-card">'
                 + '<a href="' + detailUrl + '" class="story-image">'
-                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "main/webapp/images/")) + '" alt="'
                 + escapeHtml(post.title) + '"></a>'
                 + '<div class="story-content">'
                 + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
@@ -255,7 +468,7 @@
                 + '<span>댓글 ' + (Number(post.comments) || 0) + '</span>'
                 + '</div>'
                 + '<div class="detail-actions local-post-actions">'
-                + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + encodeURIComponent(post.id) + '" class="detail-edit-button">수정</a>'
+                + '<a href="posts/edit.html?id=' + encodeURIComponent(post.id) + '" class="detail-edit-button">수정</a>'
                 + '<button type="button" class="detail-delete-button" data-post-id="' + escapeHtml(post.id) + '">삭제</button>'
                 + '</div>'
                 + '</div></article>';
@@ -290,7 +503,6 @@
         loadMyPosts();
 
     });
-
 
     /*
      * 스크랩한 글 목록 (최근에 스크랩한 순).
@@ -329,11 +541,11 @@
                 post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
 
             const detailUrl =
-                "<%= contextPath %>/posts/detail.jsp?id=" + encodeURIComponent(post.id);
+                "posts/detail.html?id=" + encodeURIComponent(post.id);
 
             return '<article class="story-card">'
                 + '<a href="' + detailUrl + '" class="story-image">'
-                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "main/webapp/images/")) + '" alt="'
                 + escapeHtml(post.title) + '"></a>'
                 + '<div class="story-content">'
                 + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'

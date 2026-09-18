@@ -93,9 +93,70 @@
         });
     }
 
+    /*
+     * 게시글에 딸린 댓글/좋아요 문서를 모두 지운다.
+     * Firestore는 부모 문서를 지워도 하위 컬렉션이 자동으로 지워지지 않기 때문에
+     * 게시글을 지우기 "전에" (규칙이 게시글 작성자를 확인할 수 있도록) 먼저 지운다.
+     * batch는 한 번에 500건까지라 400건씩 나눠서 지운다.
+     */
+
+    async function deletePostChildren(id) {
+
+        const subcollections = ["comments", "likes"];
+
+        for (const name of subcollections) {
+
+            const snapshot = await db()
+                .collection("posts").doc(id).collection(name).get();
+
+            for (let i = 0; i < snapshot.docs.length; i += 400) {
+
+                const batch = db().batch();
+
+                snapshot.docs.slice(i, i + 400).forEach(function (doc) {
+                    batch.delete(doc.ref);
+                });
+
+                await batch.commit();
+            }
+        }
+    }
+
+    /*
+     * Storage에 올려둔 게시글 사진을 지운다. 사진이 남아 있어도 화면에는 영향이 없으므로
+     * 실패(다른 사람 폴더의 사진 등)해도 조용히 넘어간다.
+     */
+
+    async function deleteImageByUrl(url) {
+
+        if (!url) {
+            return;
+        }
+
+        try {
+            await firebase.storage().refFromURL(url).delete();
+        } catch (error) {
+            console.warn("사진 파일을 지우지 못했습니다(무시):", error.code || error.message);
+        }
+    }
+
+    /*
+     * 게시글을 지우면서 그 글에 귀속된 데이터(댓글, 좋아요, 업로드 사진)도 함께 정리한다.
+     * 스크랩은 다른 사용자의 개인 목록이라 여기서 지울 수 없어서, 마이페이지가 목록을
+     * 불러올 때 사라진 글의 스크랩을 자동으로 정리한다.
+     */
+
     async function deletePost(id, postTitle, actorUid, actorNickname) {
 
         await ensureSignedIn();
+
+        const post = await getPostById(id);
+
+        try {
+            await deletePostChildren(id);
+        } catch (error) {
+            console.warn("댓글/좋아요를 모두 지우지 못했습니다(글 삭제는 계속):", error.code || error.message);
+        }
 
         await db().collection("posts").doc(id).delete();
 
@@ -106,6 +167,10 @@
             actorUid: actorUid,
             actorNickname: actorNickname
         });
+
+        if (post) {
+            await deleteImageByUrl(post.imageUrl);
+        }
     }
 
     async function addLog(logData) {
@@ -427,6 +492,7 @@
         imageSrc: imageSrc,
         validateImageFile: validateImageFile,
         uploadPostImage: uploadPostImage,
+        deleteImageByUrl: deleteImageByUrl,
         getComments: getComments,
         addComment: addComment,
         deleteComment: deleteComment,

@@ -1,11 +1,9 @@
-<!--
-    GitHub Pages 전용 정적 사본입니다.
-    실제 프로젝트(JSP 원본)는 main/webapp/index.jsp이며, 이 파일은
-    거기서 <% %> 스크립틀릿과 <%@ include %>만 제거해 만든 것입니다.
-    css/images/js는 main/webapp 아래 원본을 그대로 재사용합니다.
-    내용을 고칠 때는 main/webapp/index.jsp를 먼저 고친 뒤 이 파일에도 반영하세요.
--->
 <!DOCTYPE html>
+<!--
+    GitHub Pages용 정적 사본입니다. (자동 생성 파일: 직접 고치지 마세요)
+    원본은 main/webapp/index.jsp 이며, 원본을 고친 뒤 저장소 루트에서
+    `python tools/build-static.py` 를 실행하면 이 파일이 다시 만들어집니다.
+-->
 <html lang="ko">
 
 <head>
@@ -47,39 +45,31 @@
                 홈
             </a>
 
-            <a href="posts.html">
-                여행지
-            </a>
-
-            <a href="posts.html">
-                여행후기
-            </a>
-
-            <a href="#">
+             <a href="posts.html">
                 커뮤니티
-            </a>
-
-            <a href="#">
-                여행꿀팁
-            </a>
-
-            <a href="#">
-                Q&amp;A
             </a>
 
         </nav>
 
-        <div class="member-menu"
-             id="memberMenu">
+        <div class="member-menu">
 
-            <a href="auth/login.html">
-                로그인
+            <a href="posts/write.html"
+               class="write-link">
+                글쓰기
             </a>
 
-            <a href="#"
-               class="join-button">
-                회원가입
-            </a>
+            <span id="memberMenu">
+
+                <a href="auth/login.html">
+                    로그인
+                </a>
+
+                <a href="auth/signup.html"
+                   class="join-button">
+                    회원가입
+                </a>
+
+            </span>
 
         </div>
 
@@ -164,7 +154,7 @@
 
             <h2>여행 카테고리</h2>
 
-            <a href="#">
+            <a href="posts.html">
                 전체보기 〉
             </a>
 
@@ -230,7 +220,7 @@
             </a>
 
             <!-- 여행지 맛집 -->
-            <a href="#"
+            <a href="posts.html?style=food"
                class="category-card">
 
                 <img src="main/webapp/images/travel_food.jpg"
@@ -263,7 +253,7 @@
 
             <h2>📝 최신 여행 이야기</h2>
 
-            <a href="#">
+            <a href="posts.html">
                 전체보기 〉
             </a>
 
@@ -284,7 +274,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="posts.html?country=KR">
                         더보기 〉
                     </a>
 
@@ -292,73 +282,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="koreaCardList">
 
-                <article class="story-card"
-                         data-date="2026-09-10">
-
-                    <a href="#"
-                       class="story-image">
-
-                        <img src="main/webapp/images/jeju.jpg"
-                             alt="제주도 2박 3일 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            한국 여행지
-                        </span>
-
-                        <h3>
-                            <a href="#">
-                                제주도 2박 3일 힐링 여행
-                            </a>
-                        </h3>
-
-                        <p>
-                            아름다운 바다와 카페, 맛집까지
-                            알차게 다녀온 제주 여행 기록입니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>바다소년</span>
-                            <span>2026.09.10</span>
-                            <span>조회 892</span>
-                            <span>댓글 18</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 한국 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 한국 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 한국 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -379,7 +306,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="posts.html?country=JP">
                         더보기 〉
                     </a>
 
@@ -387,73 +314,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="japanCardList">
 
-                <article class="story-card"
-                         data-date="2026-09-12">
-
-                    <a href="#"
-                       class="story-image">
-
-                        <img src="main/webapp/images/fukuoka.jpg"
-                             alt="후쿠오카 3박 4일 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            일본 여행지
-                        </span>
-
-                        <h3>
-                            <a href="#">
-                                후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행
-                            </a>
-                        </h3>
-
-                        <p>
-                            첫 일본 자유여행에서 만족했던 맛집과
-                            숙소, 교통 정보를 정리했습니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>여행좋아</span>
-                            <span>2026.09.12</span>
-                            <span>조회 1,245</span>
-                            <span>댓글 32</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 일본 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 일본 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 일본 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -474,7 +338,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="posts.html?country=ETC">
                         더보기 〉
                     </a>
 
@@ -482,73 +346,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="worldCardList">
 
-                <article class="story-card"
-                         data-date="2026-09-08">
-
-                    <a href="#"
-                       class="story-image">
-
-                        <img src="main/webapp/images/barcelona.jpg"
-                             alt="스페인 바르셀로나 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            세계 여행지
-                        </span>
-
-                        <h3>
-                            <a href="#">
-                                처음 떠나는 유럽, 스페인 바르셀로나
-                            </a>
-                        </h3>
-
-                        <p>
-                            캄프 누에서의 열정을 느낄 수 있는
-                            바르셀로나 여행을 준비합니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>길위에서</span>
-                            <span>2026.09.08</span>
-                            <span>조회 2,103</span>
-                            <span>댓글 41</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 세계 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 세계 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 세계 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -575,7 +376,7 @@
                 함께 공유해 보세요.
             </p>
 
-            <a href="#">
+            <a href="posts/write.html">
                 여행 이야기 작성하기
             </a>
 
@@ -612,9 +413,9 @@
 
             <strong>여행만들기</strong>
 
-            <a href="#">소개</a>
-            <a href="#">이용약관</a>
-            <a href="#">개인정보처리방침</a>
+            <a href="#" class="footer-placeholder-link" data-message="서비스 소개 페이지는 준비 중입니다.">소개</a>
+            <a href="#" class="footer-placeholder-link" data-message="이용약관 페이지는 준비 중입니다.">이용약관</a>
+            <a href="#" class="footer-placeholder-link" data-message="개인정보처리방침 페이지는 준비 중입니다.">개인정보처리방침</a>
 
         </div>
 
@@ -622,9 +423,9 @@
 
             <strong>고객지원</strong>
 
-            <a href="#">공지사항</a>
-            <a href="#">자주 묻는 질문</a>
-            <a href="#">문의하기</a>
+            <a href="#" class="footer-placeholder-link" data-message="등록된 공지사항이 없습니다.">공지사항</a>
+            <a href="#" class="footer-placeholder-link" data-message="자주 묻는 질문 페이지는 준비 중입니다.">자주 묻는 질문</a>
+            <a href="#" class="footer-placeholder-link" data-message="문의하기 기능은 준비 중입니다. 급한 문의는 이메일로 남겨주세요.">문의하기</a>
 
         </div>
 
@@ -636,10 +437,71 @@
 
 </footer>
 
+<script>
+    document.querySelectorAll(".footer-placeholder-link").forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            alert(link.dataset.message);
+
+        });
+
+    });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-storage-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAythcpdfR-tuSQEzFkw8EKRwNEfnC7bJE",
+        authDomain: "ai2gi-project-01.firebaseapp.com",
+        projectId: "ai2gi-project-01",
+        storageBucket: "ai2gi-project-01.firebasestorage.app",
+        messagingSenderId: "34655357322",
+        appId: "1:34655357322:web:d7f146b0ccd5bc15f3a073"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const authReadyStartedAt = performance.now();
+
+    window.authReady = new Promise(function (resolve) {
+
+        const unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
+
+            unsubscribe();
+
+            console.log(
+                "[authReady] 세션 복원 완료 ("
+                + Math.round(performance.now() - authReadyStartedAt) + "ms), user ="
+                + (user ? " " + user.uid : " null")
+            );
+
+            resolve(user);
+
+        });
+
+    });
+</script>
+
 <script src="main/webapp/js/mock-auth.js"></script>
 
 <script>
-    (function renderMemberMenu() {
+    function escapeMenuText(text) {
+
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    (async function renderMemberMenu() {
 
         const memberMenu =
             document.getElementById("memberMenu");
@@ -651,9 +513,40 @@
             return;
         }
 
+        /*
+         * 로그인 정보의 닉네임은 이 브라우저(localStorage)에만 저장돼 있어서,
+         * 다른 곳에서 닉네임을 바꿨다면 users 문서의 최신 닉네임으로 맞춘다.
+         */
+
+        try {
+
+            const profileDoc = await firebase.firestore()
+                .collection("users").doc(currentUser.id).get();
+
+            const savedNickname =
+                profileDoc.exists ? profileDoc.data().nickname : "";
+
+            if (savedNickname && savedNickname !== currentUser.nickname) {
+                currentUser.nickname = savedNickname;
+                mockAuth.login(currentUser);
+            }
+
+        } catch (error) {
+            console.warn("닉네임을 동기화하지 못했습니다(무시):", error.code || error.message);
+        }
+
+        const isAdmin =
+            await mockAuth.isAdmin();
+
+        const adminLinkHtml = isAdmin
+            ? '<a href="admin/index.html">관리자</a>'
+            : '';
+
         memberMenu.innerHTML =
-            '<span class="member-nickname">'
-            + currentUser.nickname
+            adminLinkHtml
+            + '<a href="mypage.html">마이페이지</a>'
+            + '<span class="member-nickname">'
+            + escapeMenuText(currentUser.nickname)
             + '님</span>'
             + '<a href="#" id="logoutLink">로그아웃</a>';
 
@@ -670,6 +563,9 @@
 
     })();
 </script>
+
+<script src="main/webapp/js/posts-store.js"></script>
+<script src="main/webapp/js/author-info.js"></script>
 
 <script>
     /*
@@ -695,7 +591,6 @@
         });
 
     });
-
 
     /*
      * 검색 버튼 임시 기능
@@ -727,62 +622,78 @@
 
     });
 
-
     /*
-     * 각 국가 게시판 게시물을 최신순으로 정렬
+     * Firestore posts 컬렉션에서 국가별 최신 게시물을 최대 3개씩 보여준다.
+     * 모자란 칸은 빈 카드로 채운다.
      */
 
-    function sortBoardsByLatestDate() {
+    function escapeHtml(text) {
 
-        const boardLists =
-            document.querySelectorAll(
-                ".country-card-list"
-            );
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        boardLists.forEach(function (boardList) {
+    function renderCountryBoard(containerId, countryCode, posts, emptyText) {
 
-            const cards =
-                Array.from(boardList.children);
+        const container =
+            document.getElementById(containerId);
 
-            cards.sort(function (firstCard, secondCard) {
+        const countryPosts =
+            posts.filter(function (post) {
+                return post.country === countryCode;
+            }).slice(0, 3);
 
-                const firstIsEmpty =
-                    firstCard.dataset.empty === "true";
+        container.innerHTML = countryPosts.map(function (post) {
 
-                const secondIsEmpty =
-                    secondCard.dataset.empty === "true";
+            const detailUrl =
+                "posts/detail.html?id=" + encodeURIComponent(post.id);
 
-                if (firstIsEmpty && !secondIsEmpty) {
-                    return 1;
-                }
+            return '<article class="story-card">'
+                + '<a href="' + detailUrl + '" class="story-image">'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "main/webapp/images/")) + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="' + detailUrl + '">' + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span data-nickname-uid="' + escapeHtml(post.authorUid) + '">' + escapeHtml(post.authorNickname) + '</span>'
+                + '<span>' + escapeHtml(post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "") + '</span>'
+                + '<span>조회 ' + (Number(post.views) || 0) + '</span>'
+                + '<span>좋아요 ' + (Number(post.likes) || 0) + '</span>'
+                + '<span>댓글 ' + (Number(post.comments) || 0) + '</span>'
+                + '</div>'
+                + '<div class="author-info" data-author-uid="' + escapeHtml(post.authorUid)
+                + '" data-author-nickname="' + escapeHtml(post.authorNickname) + '"></div>'
+                + '</div></article>';
 
-                if (!firstIsEmpty && secondIsEmpty) {
-                    return -1;
-                }
+        }).join("");
 
-                if (firstIsEmpty && secondIsEmpty) {
-                    return 0;
-                }
+        initAuthorInfo(container);
+        resolveNicknames(container);
 
-                const firstDate =
-                    new Date(firstCard.dataset.date);
+        for (let i = countryPosts.length; i < 3; i++) {
 
-                const secondDate =
-                    new Date(secondCard.dataset.date);
+            container.innerHTML +=
+                '<article class="empty-story-card" data-empty="true">'
+                + '<div class="empty-folder">📁</div>'
+                + '<p>' + emptyText + '</p>'
+                + '</article>';
 
-                return secondDate - firstDate;
-
-            });
-
-            cards.forEach(function (card) {
-                boardList.appendChild(card);
-            });
-
-        });
+        }
 
     }
 
-    sortBoardsByLatestDate();
+    (async function loadHomeStories() {
+
+        const posts = await postsStore.getAllPosts();
+
+        renderCountryBoard("koreaCardList", "KR", posts, "새로운 한국 여행 이야기가<br>등록될 공간입니다.");
+        renderCountryBoard("japanCardList", "JP", posts, "새로운 일본 여행 이야기가<br>등록될 공간입니다.");
+        renderCountryBoard("worldCardList", "ETC", posts, "새로운 세계 여행 이야기가<br>등록될 공간입니다.");
+
+    })();
 </script>
 
 </body>

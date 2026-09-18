@@ -312,29 +312,29 @@
 
             const actionsHtml = canManage
                 ? '<div class="detail-actions local-post-actions">'
-                    + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
-                    + '<button type="button" class="detail-delete-button" data-post-id="' + post.id + '">삭제</button>'
+                    + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + encodeURIComponent(post.id) + '" class="detail-edit-button">수정</a>'
+                    + '<button type="button" class="detail-delete-button" data-post-id="' + escapeHtml(post.id) + '">삭제</button>'
                     + '</div>'
                 : '';
 
             article.innerHTML =
-                '<a href="<%= contextPath %>/posts/detail.jsp?id=' + post.id + '" class="story-image">'
+                '<a href="<%= contextPath %>/posts/detail.jsp?id=' + encodeURIComponent(post.id) + '" class="story-image">'
                 + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
                 + escapeHtml(post.title) + '"></a>'
                 + '<div class="story-content">'
                 + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
-                + '<h3><a href="<%= contextPath %>/posts/detail.jsp?id=' + post.id + '">'
+                + '<h3><a href="<%= contextPath %>/posts/detail.jsp?id=' + encodeURIComponent(post.id) + '">'
                 + escapeHtml(post.title) + '</a></h3>'
                 + '<p>' + escapeHtml(post.body) + '</p>'
                 + '<div class="story-information">'
-                + '<span>' + escapeHtml(post.authorNickname) + '</span>'
+                + '<span data-nickname-uid="' + escapeHtml(post.authorUid) + '">' + escapeHtml(post.authorNickname) + '</span>'
                 + (isMine ? '<span class="my-post-badge">내 글</span>' : '')
-                + '<span>' + displayDate + '</span>'
-                + '<span>조회 ' + (post.views || 0) + '</span>'
-                + '<span>좋아요 ' + (post.likes || 0) + '</span>'
-                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '<span>' + escapeHtml(displayDate) + '</span>'
+                + '<span>조회 ' + (Number(post.views) || 0) + '</span>'
+                + '<span>좋아요 ' + (Number(post.likes) || 0) + '</span>'
+                + '<span>댓글 ' + (Number(post.comments) || 0) + '</span>'
                 + '</div>'
-                + '<div class="author-info" data-author-uid="' + post.authorUid
+                + '<div class="author-info" data-author-uid="' + escapeHtml(post.authorUid)
                 + '" data-author-nickname="' + escapeHtml(post.authorNickname) + '"></div>'
                 + actionsHtml
                 + '</div>';
@@ -349,6 +349,7 @@
         applyFilters();
 
         initAuthorInfo(postList);
+        resolveNicknames(postList);
 
     }
 

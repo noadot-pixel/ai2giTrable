@@ -11,6 +11,13 @@
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
 
 <script>
+    function escapeMenuText(text) {
+
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     (async function renderMemberMenu() {
 
         const memberMenu =
@@ -21,6 +28,28 @@
 
         if (!memberMenu || !currentUser) {
             return;
+        }
+
+        /*
+         * 로그인 정보의 닉네임은 이 브라우저(localStorage)에만 저장돼 있어서,
+         * 다른 곳에서 닉네임을 바꿨다면 users 문서의 최신 닉네임으로 맞춘다.
+         */
+
+        try {
+
+            const profileDoc = await firebase.firestore()
+                .collection("users").doc(currentUser.id).get();
+
+            const savedNickname =
+                profileDoc.exists ? profileDoc.data().nickname : "";
+
+            if (savedNickname && savedNickname !== currentUser.nickname) {
+                currentUser.nickname = savedNickname;
+                mockAuth.login(currentUser);
+            }
+
+        } catch (error) {
+            console.warn("닉네임을 동기화하지 못했습니다(무시):", error.code || error.message);
         }
 
         const isAdmin =
@@ -34,7 +63,7 @@
             adminLinkHtml
             + '<a href="<%= contextPath %>/mypage.jsp">마이페이지</a>'
             + '<span class="member-nickname">'
-            + currentUser.nickname
+            + escapeMenuText(currentUser.nickname)
             + '님</span>'
             + '<a href="#" id="logoutLink">로그아웃</a>';
 

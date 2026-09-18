@@ -134,18 +134,19 @@ git remote -v           # 원격 저장소 주소 확인
 
 **규칙 원본은 저장소의 `firebase/firestore.rules`** (콘솔 Firestore Database → 규칙 탭에 그대로 붙여넣고 **게시**). 이 파일이 항상 최신 기준이다.
 
-- `posts`: 읽기 공개 / 작성은 로그인 / 수정·삭제는 작성자 또는 관리자. 단 **`likes`·`comments` 카운터만 바꾸는 갱신**은 로그인한 누구나 가능.
+- `posts`: 읽기 공개 / **작성은 로그인 + `authorUid`가 본인 uid일 때만** / 수정·삭제는 작성자 또는 관리자. 단 **`likes`·`comments` 카운터만 바꾸는 갱신**은 로그인한 누구나 가능.
 - `posts/{id}/comments/{id}`: 읽기 공개 / 작성은 로그인(본인 uid, 1~500자) / 삭제는 댓글 작성자·게시글 작성자·관리자 / 수정 불가.
-- `posts/{id}/likes/{uid}`: 본인만 읽기·생성·삭제.
+- `posts/{id}/likes/{uid}`: 본인은 읽기·생성·삭제. **게시글 작성자·관리자는 글을 지울 때 정리할 수 있도록 읽기·삭제 가능.**
 - `users/{uid}/scraps/{postId}`: 본인만 읽기·쓰기.
-- `postLogs`(관리자만 읽기), `users`, `admins`는 기존과 동일.
+- `postLogs`: 관리자만 읽기 / 작성은 로그인 + `actorUid`가 본인 uid + `type`이 CREATE·UPDATE·DELETE일 때만.
+- `users`, `admins`는 기존과 동일.
 
 - `users` 컬렉션을 공개 읽기로 열어둔 이유: 게시글 작성자의 자기소개/국가 등을 **비로그인 방문자도 볼 수 있게** 하기 위함(작성자 정보 카드 기능, 아래 8번 참고). 이메일 등 민감한 필드는 화면에 표시만 안 할 뿐 문서 자체는 공개라는 점 인지하고 있을 것.
 - Firestore/Storage 콘솔에서 규칙 텍스트를 붙여넣기만 하고 **"게시" 버튼을 안 누르면 적용 안 됨** — 이 프로젝트 하면서 두 번이나 이걸로 헤맸음. 규칙 수정하면 꼭 게시 버튼 확인.
 
 ## 7. Storage 보안 규칙 (게시글 사진 경로 추가본 — 콘솔에 게시해야 적용됨)
 
-**규칙 원본은 저장소의 `firebase/storage.rules`.** `profile-images/{uid}`(프로필)와 `post-images/{uid}/{파일명}`(게시글 사진) 두 경로만 허용. 둘 다 읽기 공개, 쓰기는 본인 uid 폴더 + 5MB 미만 + `image/*`만. 삭제는 규칙상 불가(앱에서 안 씀).
+**규칙 원본은 저장소의 `firebase/storage.rules`.** `profile-images/{uid}`(프로필)와 `post-images/{uid}/{파일명}`(게시글 사진) 두 경로만 허용. 둘 다 읽기 공개, 쓰기는 본인 uid 폴더 + 5MB 미만 + `image/*`만. `post-images`는 폴더 주인만 삭제 가능(글을 지우거나 사진을 바꿀 때 옛 사진을 정리하는 용도, 실패해도 무시).
 
 - 게시글 사진은 **실제 업로드가 구현됨**(write/edit.jsp → `postsStore.uploadPostImage`). 사진을 안 올리면 국가별 고정 이미지(korea/japan/world.jpg)를 씀. 옛 글은 `imageUrl`이 없어서 계속 `image` 파일명을 씀.
 - PowerShell REST API로 업로드/다운로드 직접 테스트해서 규칙 자체는 정상 동작 확인함 (삭제만 규칙상 막혀있는데, 앱에서 실제로 삭제 기능을 안 쓰니 문제 없음).
@@ -211,13 +212,25 @@ git remote -v           # 원격 저장소 주소 확인
 - 헤더/푸터 등 이벤트 없는 `<a href="#">` 전수 점검 완료 (푸터 6개 링크는 클릭 시 alert만 뜨는 placeholder로 처리)
 - 관리자가 게시글 **목록**에서도 남의 글을 관리할 수 있게 수정함 (전에는 상세 화면에서만 가능했음)
 - 게시글 수정 로그에 "작업자"가 항상 실제 로그인한 사람(관리자일 수도 있음)으로 남도록 수정함 (전에는 원래 작성자로 잘못 기록되던 버그 있었음)
-- GitHub Pages용 정적 사본(`index.html`, `posts.html`, `auth/login.html`, 저장소 루트)은 **Firestore 전환 이후로 갱신 안 함** — 지금 내용이 예전 방식(하드코딩/localStorage) 그대로라 실제 앱과 다름. 공유 링크 필요할 때 다시 찍어주기로 함.
+- 게시글 삭제 시 댓글·좋아요·업로드 사진을 함께 정리함(`postsStore.deletePost`). **스크랩은 다른 사용자의 개인 목록이라 못 지우므로**, 마이페이지가 목록을 불러올 때 사라진 글의 스크랩을 자동으로 정리함.
+- 닉네임을 바꾸면 곧바로 반영됨: 글/댓글에 복사돼 있는 `authorNickname` 대신, 화면을 그릴 때 `users/{uid}`의 현재 닉네임으로 바꿔 보여줌(`author-info.js`의 `resolveNicknames`, 요소에 `data-nickname-uid`). 헤더 닉네임도 페이지 로드 때 users 문서와 동기화. (관리자 로그의 `actorNickname`은 이력이라 작업 당시 값 그대로 둠)
+- 보안 점검: `detail.jsp`의 `id` 파라미터 스크립트 주입(XSS)을 고치고, Firestore에서 온 값을 `innerHTML`에 넣는 곳은 모두 이스케이프함.
+
+### GitHub Pages 배포 (정적 사본)
+
+- GitHub Pages는 JSP를 실행하지 못하지만, 이 프로젝트 화면은 브라우저에서 Firebase를 직접 호출하는 구조라 **JSP의 서버 쪽 처리(include, contextPath)만 풀면 정적 HTML로 그대로 동작함.**
+- 저장소 루트의 `*.html`(index, posts, mypage, auth/*, posts/*, mypage/*, admin/*)은 **`tools/build-static.py`가 `main/webapp`의 JSP에서 자동 생성한 파일**임. 직접 고치지 말 것.
+- **작업 순서**: JSP/JS/CSS를 고친 뒤 → 저장소 루트에서 `python tools/build-static.py` → 생성된 `.html`까지 함께 커밋/푸시. (JS·CSS·이미지는 `main/webapp/` 것을 그대로 참조하므로 그것만 고쳤을 땐 빌드 불필요, JSP를 고쳤을 때만 필요)
+- 공개 주소: `https://noadot-pixel.github.io/ai2giTrable/` (GitHub 저장소 Settings → Pages → Source가 `main` 브랜치 `/(root)`여야 함). `.nojekyll`이 있어 Jekyll 처리 없이 파일 그대로 서빙됨.
+- 로컬에서 정적 사본 확인: 저장소 루트에서 `python -m http.server 8090` → `http://localhost:8090/index.html`
+- 로그인이 Pages에서 안 되면 Firebase 콘솔 Authentication → 설정 → 승인된 도메인에 `noadot-pixel.github.io`를 추가할 것.
+- Tomcat(JSP) 버전과 GitHub Pages(정적) 버전은 같은 Firebase 프로젝트/데이터를 공유함.
 
 ## 12. 아직 안 만든 것 / 기획서상 남은 항목
 
 - `/mypage/edit`은 있지만 회원정보 수정 세부 항목(비밀번호 변경 등)은 기획서 원안과 다르게 단순화됨
-- **[다음에 할 일 1순위] Firebase 콘솔에 새 규칙 게시 후 동작 확인**: `firebase/firestore.rules`, `firebase/storage.rules`를 각각 콘솔 규칙 탭에 붙여넣고 게시 → 글쓰기(사진 첨부), 댓글, 좋아요, 스크랩, 마이페이지 스크랩 목록을 브라우저에서 눌러보기. 코드는 구현·컴파일 확인까지만 했고 실제 저장 동작은 규칙 게시 전이라 미검증.
-- (구현됨, 위 확인 필요) 게시글 사진 업로드 / 댓글 / 좋아요 / 스크랩. 알려진 한계: 글을 삭제해도 그 글의 댓글·좋아요 서브컬렉션 문서는 남음(화면엔 안 보임), 교체된 옛 사진 파일은 Storage에 남음, 카운터는 클라이언트가 갱신하므로 규칙상 임의 값 변경을 완전히 막진 못함(목업 수준)
+- **Firebase 콘솔에 규칙 재게시 필요(2026-09-19 규칙 수정분)**: `firebase/firestore.rules`(posts 작성자 검증, likes 정리 권한, postLogs 검증)와 `firebase/storage.rules`(post-images 삭제 허용)를 각각 콘솔에 붙여넣고 **게시**해야 연쇄 삭제·사진 정리가 동작함. 게시 전에도 글 삭제 자체는 되지만 댓글·좋아요·사진이 남음.
+- (구현·동작 확인됨) 게시글 사진 업로드 / 댓글 / 좋아요 / 스크랩. 알려진 한계: 카운터(`likes`, `comments`)는 클라이언트가 갱신하므로 규칙상 임의 값 변경을 완전히 막진 못함(목업 수준), 다른 사람 폴더에 올라간 사진(관리자가 남의 글 사진을 바꾼 경우)은 글을 지워도 Storage에 남을 수 있음
 - 회원가입/회원 관리는 **목업으로 결정**(2026-09-19): 회원가입은 alert만, 회원 관리 화면은 삭제(관리자 메뉴는 alert). 실제 구현은 Oracle 전환 때
 - 모바일 반응형은 로그인/회원가입 화면에만 있고 나머지 화면은 없음
 - 게시글 조회수(`views`)는 화면에 표시만 하고 증가시키는 로직이 없어 항상 0

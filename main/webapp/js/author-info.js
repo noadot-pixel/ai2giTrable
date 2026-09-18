@@ -55,8 +55,8 @@
             ? (profile.countryOther || "기타")
             : (COUNTRY_LABELS[profile.country] || "");
 
-        const photoHtml = profile.photoUrl
-            ? '<img class="author-info-photo" src="' + profile.photoUrl + '" alt="">'
+        const photoHtml = /^https?:\/\//.test(profile.photoUrl || "")
+            ? '<img class="author-info-photo" src="' + escapeHtml(profile.photoUrl) + '" alt="">'
             : '<span class="author-info-photo author-info-photo-empty"></span>';
 
         return '<div class="author-info-card">'
@@ -103,6 +103,30 @@
 
     }
 
+    /*
+     * 글/댓글에는 작성 당시 닉네임이 복사돼 있어서, 닉네임을 바꿔도 그대로 남는다.
+     * data-nickname-uid 속성이 있는 요소는 users/{uid}의 "현재" 닉네임으로 바꿔 보여준다.
+     * (프로필 문서가 없거나 조회에 실패하면 원래 적혀 있던 닉네임을 그대로 둔다.)
+     */
+
+    async function resolveNicknames(root) {
+
+        const nodes =
+            (root || document).querySelectorAll("[data-nickname-uid]");
+
+        await Promise.all(Array.from(nodes).map(async function (node) {
+
+            const profile = await fetchProfile(node.dataset.nicknameUid);
+
+            if (profile.nickname) {
+                node.textContent = profile.nickname;
+            }
+
+        }));
+
+    }
+
     global.initAuthorInfo = initAuthorInfo;
+    global.resolveNicknames = resolveNicknames;
 
 })(window);

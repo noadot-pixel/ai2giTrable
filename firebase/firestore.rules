@@ -11,6 +11,12 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // 로그인한 사용자가 이 게시글의 작성자인지 확인.
+    function isPostAuthor(postId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/posts/$(postId)).data.authorUid == request.auth.uid;
+    }
+
     // 좋아요/댓글 수(카운터)만 바꾸는 갱신인지 확인.
     // 글 작성자가 아닌 사용자도 카운터만은 바꿀 수 있어야 한다.
     function onlyCounterChange() {
@@ -20,7 +26,9 @@ service cloud.firestore {
 
     match /posts/{postId} {
       allow read: if true;
-      allow create: if isSignedIn();
+      // 작성자(authorUid)는 반드시 로그인한 본인이어야 한다.
+      allow create: if isSignedIn() &&
+        request.resource.data.authorUid == request.auth.uid;
       allow update: if isSignedIn() &&
         (resource.data.authorUid == request.auth.uid || isAdmin() || onlyCounterChange());
       allow delete: if isSignedIn() &&
@@ -28,6 +36,7 @@ service cloud.firestore {
 
       // 댓글: 누구나 읽기, 로그인한 사용자만 작성(본인 uid로만), 삭제는
       // 댓글 작성자 / 게시글 작성자 / 관리자만 가능. 수정은 없음.
+      // (게시글을 지울 때 그 글의 댓글도 함께 지워야 하므로 글 작성자/관리자도 삭제 가능)
       match /comments/{commentId} {
         allow read: if true;
         allow create: if isSignedIn() &&
@@ -39,20 +48,29 @@ service cloud.firestore {
         allow delete: if isSignedIn() &&
           (resource.data.authorUid == request.auth.uid ||
            isAdmin() ||
-           get(/databases/$(database)/documents/posts/$(postId)).data.authorUid == request.auth.uid);
+           isPostAuthor(postId));
       }
 
-      // 좋아요: 문서 id = 좋아요한 사용자의 uid. 본인 것만 읽고/만들고/지울 수 있음.
+      // 좋아요: 문서 id = 좋아요한 사용자의 uid.
+      // 본인 것은 읽고/만들고/지울 수 있고, 게시글 작성자와 관리자는
+      // 게시글을 지울 때 정리할 수 있도록 읽기/삭제만 가능하다.
       match /likes/{uid} {
-        allow read: if isSignedIn() && request.auth.uid == uid;
-        allow create, delete: if isSignedIn() && request.auth.uid == uid;
+        allow read: if isSignedIn() &&
+          (request.auth.uid == uid || isAdmin() || isPostAuthor(postId));
+        allow create: if isSignedIn() && request.auth.uid == uid;
         allow update: if false;
+        allow delete: if isSignedIn() &&
+          (request.auth.uid == uid || isAdmin() || isPostAuthor(postId));
       }
     }
 
+    // 작업 이력: 관리자만 읽기. 작성 시 작업자(actorUid)는 로그인한 본인이어야 하고
+    // 종류는 CREATE/UPDATE/DELETE만 허용. 수정/삭제 불가.
     match /postLogs/{logId} {
       allow read: if isAdmin();
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.actorUid == request.auth.uid &&
+        request.resource.data.type in ['CREATE', 'UPDATE', 'DELETE'];
       allow update, delete: if false;
     }
 
