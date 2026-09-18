@@ -305,6 +305,7 @@
             article.dataset.style = post.style;
             article.dataset.date = post.createdAt;
             article.dataset.views = post.views || 0;
+            article.dataset.likes = post.likes || 0;
 
             const displayDate =
                 post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
@@ -491,7 +492,7 @@
 
     /*
      * 정렬: 최신순 / 인기순
-     * (댓글·좋아요 등 인기 기준은 미확정이라 조회수 기준으로 임시 정렬)
+     * (인기순은 좋아요 수 → 조회수 → 최신순 순서로 비교한다)
      */
 
     const sortButtons =
@@ -520,8 +521,9 @@
 
                 if (sortType === "popular") {
 
-                    return Number(secondCard.dataset.views)
-                        - Number(firstCard.dataset.views);
+                    return (Number(secondCard.dataset.likes) - Number(firstCard.dataset.likes))
+                        || (Number(secondCard.dataset.views) - Number(firstCard.dataset.views))
+                        || (new Date(secondCard.dataset.date) - new Date(firstCard.dataset.date));
                 }
 
                 const firstDate =

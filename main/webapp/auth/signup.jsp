@@ -32,10 +32,9 @@
 <main>
 
     <!-- =========================
-         회원가입
-         Firebase Authentication(이메일/비밀번호)으로 실제 계정을 생성한다.
-         아이디 중복 확인은 Firebase가 이메일 중복 가입을 막아주는 것으로 대신한다.
-         추후 Oracle JDBC 기반 회원 테이블로 교체될 예정.
+         회원가입 (목업)
+         실제 계정 생성/DB 저장은 하지 않고, 입력 검사 후 "가입 완료" alert만 띄운 뒤
+         로그인 화면으로 이동한다. 추후 Oracle JDBC 기반 회원 테이블로 교체될 예정.
     ========================== -->
 
     <section class="auth-section">
@@ -175,9 +174,8 @@
 
 <script>
     /*
-     * Firebase Authentication(이메일/비밀번호)으로 실제 계정을 생성하고,
-     * 관리자 화면(회원 관리)에서 조회할 수 있도록 Firestore users 컬렉션에도
-     * 같은 uid로 기본 정보를 기록한다.
+     * 회원가입 목업: 입력값만 검사하고, 가입이 완료된 것처럼 alert를 띄운 뒤
+     * 로그인 화면으로 이동한다. (Firebase 계정 생성, DB 기록은 하지 않는다.)
      */
 
     const signupForm =
@@ -194,13 +192,6 @@
 
     const passwordConfirmInput =
         document.getElementById("signupPasswordConfirm");
-
-    const SIGNUP_ERROR_MESSAGES = {
-        "auth/email-already-in-use": "이미 사용 중인 이메일입니다.",
-        "auth/invalid-email": "이메일 형식이 올바르지 않습니다.",
-        "auth/weak-password": "비밀번호는 6자 이상이어야 합니다.",
-        "auth/too-many-requests": "시도가 너무 많습니다. 잠시 후 다시 시도해 주세요."
-    };
 
     signupForm.addEventListener("submit", function (event) {
 
@@ -239,54 +230,9 @@
             return;
         }
 
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then(function (userCredential) {
+        alert("회원가입이 완료되었습니다. 로그인해 주세요.");
 
-                return userCredential.user.updateProfile({
-                    displayName: nickname
-                }).then(function () {
-                    return userCredential.user;
-                });
-
-            })
-            .then(function (firebaseUser) {
-
-                return firebase.firestore()
-                    .collection("users")
-                    .doc(firebaseUser.uid)
-                    .set({
-                        nickname: nickname,
-                        email: firebaseUser.email,
-                        joinedDate: new Date().toISOString().slice(0, 10),
-                        status: "활성"
-                    })
-                    .then(function () {
-                        return firebaseUser;
-                    });
-
-            })
-            .then(function (firebaseUser) {
-
-                mockAuth.login({
-                    id: firebaseUser.uid,
-                    email: firebaseUser.email,
-                    nickname: nickname
-                });
-
-                alert("회원가입이 완료되었습니다.");
-
-                location.href = "<%= contextPath %>/index.jsp";
-
-            })
-            .catch(function (error) {
-
-                const message =
-                    SIGNUP_ERROR_MESSAGES[error.code]
-                    || "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.";
-
-                alert(message);
-
-            });
+        location.href = "<%= contextPath %>/auth/login.jsp";
 
     });
 </script>

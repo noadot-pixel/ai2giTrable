@@ -81,7 +81,8 @@
 
     <section class="admin-menu-section">
 
-        <a href="<%= contextPath %>/admin/users.jsp"
+        <a href="#"
+           id="userMenuCard"
            class="admin-menu-card">
 
             <h2>회원 관리</h2>
@@ -135,6 +136,19 @@
 <script src="<%= contextPath %>/js/posts-store.js"></script>
 
 <script>
+    /*
+     * 회원 관리는 목업에서 제외: 화면 없이 안내 alert만 띄운다.
+     */
+
+    document.getElementById("userMenuCard")
+        .addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            alert("회원 관리 기능은 준비 중입니다.");
+
+        });
+
     document.getElementById("seedButton")
         .addEventListener("click", async function () {
 

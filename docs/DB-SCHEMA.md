@@ -37,7 +37,7 @@ admins/{uid}                    관리자 표시 (필드 없음, 문서 존재 �
 | `photoUrl` | string | 프로필 사진 (Storage URL) |
 
 - 비밀번호는 저장하지 않는다. Firebase Authentication이 별도로 보관한다.
-- 회원가입 시에는 `nickname`, `email`, `joinedDate`, `status`만 기록하고, 나머지는 프로필 수정 화면에서 채운다.
+- 회원가입은 지금 목업(alert만)이라 이 컬렉션에 문서가 만들어지지 않는다. 프로필 수정 화면에서 저장할 때 처음 생긴다. (계정은 Firebase 콘솔 Authentication에서 직접 추가)
 
 ### `users/{uid}/scraps/{postId}`
 
