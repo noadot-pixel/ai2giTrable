@@ -191,6 +191,25 @@
                            id="profileBirthday"
                            name="profileBirthday">
 
+                    <div class="radio-group">
+
+                        <label class="radio-option">
+                            <input type="radio"
+                                   name="birthdayVisibility"
+                                   value="public"
+                                   checked>
+                            공개
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio"
+                                   name="birthdayVisibility"
+                                   value="private">
+                            비공개
+                        </label>
+
+                    </div>
+
                 </div>
 
                 <div class="write-field">
@@ -204,26 +223,24 @@
                            name="profileName"
                            placeholder="이름을 입력해 주세요">
 
-                </div>
+                    <div class="radio-group">
 
-                <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio"
+                                   name="nameVisibility"
+                                   value="public"
+                                   checked>
+                            공개
+                        </label>
 
-                    <p class="filter-label">개인정보 공개 여부</p>
+                        <label class="radio-option">
+                            <input type="radio"
+                                   name="nameVisibility"
+                                   value="private">
+                            비공개
+                        </label>
 
-                    <label class="radio-option">
-                        <input type="radio"
-                               name="personalInfoVisibility"
-                               value="public"
-                               checked>
-                        공개
-                    </label>
-
-                    <label class="radio-option">
-                        <input type="radio"
-                               name="personalInfoVisibility"
-                               value="private">
-                        비공개
-                    </label>
+                    </div>
 
                 </div>
 
@@ -320,11 +337,18 @@
         document.getElementById("profileName").value =
             (saved && saved.name) || "";
 
-        const visibility =
-            (saved && saved.personalInfoVisibility) || "public";
+        const birthdayVisibility =
+            (saved && saved.birthdayVisibility) || "public";
 
         document.querySelector(
-            'input[name="personalInfoVisibility"][value="' + visibility + '"]'
+            'input[name="birthdayVisibility"][value="' + birthdayVisibility + '"]'
+        ).checked = true;
+
+        const nameVisibility =
+            (saved && saved.nameVisibility) || "public";
+
+        document.querySelector(
+            'input[name="nameVisibility"][value="' + nameVisibility + '"]'
         ).checked = true;
 
     }
@@ -376,9 +400,14 @@
             return;
         }
 
-        const personalInfoVisibility =
+        const birthdayVisibility =
             document.querySelector(
-                'input[name="personalInfoVisibility"]:checked'
+                'input[name="birthdayVisibility"]:checked'
+            ).value;
+
+        const nameVisibility =
+            document.querySelector(
+                'input[name="nameVisibility"]:checked'
             ).value;
 
         const profile = {
@@ -390,8 +419,9 @@
             emailDomain: emailDomainSelect.value,
             emailDomainOther: document.getElementById("profileEmailDomainOther").value.trim(),
             birthday: document.getElementById("profileBirthday").value,
+            birthdayVisibility: birthdayVisibility,
             name: document.getElementById("profileName").value.trim(),
-            personalInfoVisibility: personalInfoVisibility
+            nameVisibility: nameVisibility
         };
 
         localStorage.setItem(
