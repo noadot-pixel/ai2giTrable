@@ -37,11 +37,32 @@
         return getCurrentUser() !== null;
     }
 
+
+    /*
+     * 관리자 판별도 실제 DB 없이 이메일 목록으로 대신한다.
+     * 추후 Firestore/Oracle의 admin 테이블(또는 컬럼)로 교체될 예정.
+     * 테스트하려면 이 목록에 본인의 Firebase 테스트 계정 이메일을 추가한다.
+     */
+
+    const ADMIN_EMAILS = [
+        "admin@trable.com"
+    ];
+
+    function isAdmin() {
+
+        const user = getCurrentUser();
+
+        return !!user
+            && !!user.email
+            && ADMIN_EMAILS.indexOf(user.email) !== -1;
+    }
+
     global.mockAuth = {
         login: login,
         logout: logout,
         getCurrentUser: getCurrentUser,
-        isLoggedIn: isLoggedIn
+        isLoggedIn: isLoggedIn,
+        isAdmin: isAdmin
     };
 
 })(window);

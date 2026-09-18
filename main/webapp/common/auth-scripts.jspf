@@ -21,8 +21,13 @@
             return;
         }
 
+        const adminLinkHtml = mockAuth.isAdmin()
+            ? '<a href="<%= contextPath %>/admin/index.jsp">관리자</a>'
+            : '';
+
         memberMenu.innerHTML =
-            '<a href="<%= contextPath %>/mypage.jsp">마이페이지</a>'
+            adminLinkHtml
+            + '<a href="<%= contextPath %>/mypage.jsp">마이페이지</a>'
             + '<span class="member-nickname">'
             + currentUser.nickname
             + '님</span>'

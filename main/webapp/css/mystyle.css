@@ -1360,3 +1360,130 @@
     accent-color: var(--blue);
 }
 
+/* =========================
+   관리자 (admin/*)
+========================= */
+
+.admin-menu-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    max-width: 900px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+}
+
+.admin-menu-card {
+    padding: 26px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background-color: white;
+
+    box-shadow:
+        0 6px 18px rgba(25, 50, 80, 0.06);
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.admin-menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.admin-menu-card h2 {
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 19px;
+}
+
+.admin-menu-card p {
+    color: var(--gray-color);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.admin-table-section {
+    max-width: 900px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+}
+
+.admin-table-section > p {
+    margin-bottom: 14px;
+    color: var(--gray-color);
+    font-size: 14px;
+}
+
+.admin-table-section > p strong {
+    color: var(--navy);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: white;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    text-align: left;
+}
+
+.admin-table th {
+    color: var(--navy);
+    background-color: var(--light-blue);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-status-active {
+    color: var(--blue);
+    background-color: var(--light-blue);
+}
+
+.admin-status-suspended {
+    color: #d64545;
+    background-color: #fdeaea;
+}
+
+.admin-log-type {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-log-create {
+    color: var(--blue);
+    background-color: var(--light-blue);
+}
+
+.admin-log-update {
+    color: #9a7b12;
+    background-color: #fdf3d9;
+}
+
+.admin-log-delete {
+    color: #d64545;
+    background-color: #fdeaea;
+}
+
