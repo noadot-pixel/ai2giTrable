@@ -118,6 +118,19 @@
         아직 작성한 게시글이 없습니다.
     </p>
 
+    <section class="page-heading">
+        <h2>스크랩한 글</h2>
+    </section>
+
+    <section class="post-list" id="scrapList">
+    </section>
+
+    <p class="empty-result"
+       id="scrapsEmpty"
+       hidden>
+        아직 스크랩한 게시글이 없습니다.
+    </p>
+
 </main>
 
 <%@ include file="/common/footer.jspf" %>
@@ -228,7 +241,7 @@
 
             return '<article class="story-card">'
                 + '<a href="' + detailUrl + '" class="story-image">'
-                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
                 + escapeHtml(post.title) + '"></a>'
                 + '<div class="story-content">'
                 + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
@@ -237,6 +250,7 @@
                 + '<div class="story-information">'
                 + '<span>' + displayDate + '</span>'
                 + '<span>조회 ' + (post.views || 0) + '</span>'
+                + '<span>좋아요 ' + (post.likes || 0) + '</span>'
                 + '<span>댓글 ' + (post.comments || 0) + '</span>'
                 + '</div>'
                 + '<div class="detail-actions local-post-actions">'
@@ -273,6 +287,87 @@
         await postsStore.deletePost(postId, postTitle, currentUser.id, currentUser.nickname);
 
         loadMyPosts();
+
+    });
+
+
+    /*
+     * 스크랩한 글 목록 (최근에 스크랩한 순).
+     * 스크랩 뒤에 원본 글이 삭제된 경우에는 목록에서 빼고 스크랩 기록도 정리한다.
+     */
+
+    async function loadScraps() {
+
+        const scrapIds = await postsStore.getMyScrapIds();
+
+        const posts = await postsStore.getAllPosts();
+
+        const postsById = {};
+
+        posts.forEach(function (post) {
+            postsById[post.id] = post;
+        });
+
+        const scrappedPosts = [];
+
+        scrapIds.forEach(function (postId) {
+
+            if (postsById[postId]) {
+                scrappedPosts.push(postsById[postId]);
+            } else {
+                postsStore.removeScrap(postId).catch(function () {});
+            }
+
+        });
+
+        document.getElementById("scrapsEmpty").hidden = scrappedPosts.length !== 0;
+
+        document.getElementById("scrapList").innerHTML = scrappedPosts.map(function (post) {
+
+            const displayDate =
+                post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
+
+            const detailUrl =
+                "<%= contextPath %>/posts/detail.jsp?id=" + post.id;
+
+            return '<article class="story-card">'
+                + '<a href="' + detailUrl + '" class="story-image">'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="' + detailUrl + '">' + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span>' + escapeHtml(post.authorNickname) + '</span>'
+                + '<span>' + displayDate + '</span>'
+                + '<span>좋아요 ' + (post.likes || 0) + '</span>'
+                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '</div>'
+                + '<div class="detail-actions local-post-actions">'
+                + '<button type="button" class="detail-delete-button" data-post-id="' + post.id + '">스크랩 해제</button>'
+                + '</div>'
+                + '</div></article>';
+
+        }).join("");
+
+    }
+
+    loadScraps().catch(function (error) {
+        console.error("스크랩 목록을 불러오지 못했습니다:", error);
+    });
+
+    document.getElementById("scrapList").addEventListener("click", async function (event) {
+
+        const removeButton = event.target.closest(".detail-delete-button");
+
+        if (!removeButton) {
+            return;
+        }
+
+        await postsStore.removeScrap(removeButton.dataset.postId);
+
+        loadScraps();
 
     });
 </script>

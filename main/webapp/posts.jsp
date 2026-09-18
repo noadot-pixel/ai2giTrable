@@ -318,7 +318,7 @@
 
             article.innerHTML =
                 '<a href="<%= contextPath %>/posts/detail.jsp?id=' + post.id + '" class="story-image">'
-                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + '<img src="' + escapeHtml(postsStore.imageSrc(post, "<%= contextPath %>/images/")) + '" alt="'
                 + escapeHtml(post.title) + '"></a>'
                 + '<div class="story-content">'
                 + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
@@ -330,6 +330,7 @@
                 + (isMine ? '<span class="my-post-badge">내 글</span>' : '')
                 + '<span>' + displayDate + '</span>'
                 + '<span>조회 ' + (post.views || 0) + '</span>'
+                + '<span>좋아요 ' + (post.likes || 0) + '</span>'
                 + '<span>댓글 ' + (post.comments || 0) + '</span>'
                 + '</div>'
                 + '<div class="author-info" data-author-uid="' + post.authorUid

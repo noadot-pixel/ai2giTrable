@@ -130,79 +130,36 @@ git remote -v           # 원격 저장소 주소 확인
   - 관리자 화면(`/admin/index.jsp`)에 "예시 게시글 시드 추가" 버튼이 있음 — `posts` 컬렉션이 비어있을 때만 동작(이미 있으면 무시).
   - **주의**: 시드 데이터를 PowerShell(REST API)로 직접 넣었을 때 한글이 `?`로 깨진 적 있었음 (Windows PowerShell 5.1이 기본적으로 UTF-8이 아닌 인코딩으로 요청 본문을 보내서 생긴 문제). REST API로 뭔가 넣을 일이 있으면 **반드시 `[System.Text.Encoding]::UTF8.GetBytes(...)`로 직접 바이트 변환해서 body로 보낼 것**, 그냥 문자열을 바디로 주면 깨짐.
 
-## 6. Firestore 보안 규칙 (현재 적용된 최종본)
+## 6. Firestore 보안 규칙 (댓글/좋아요/스크랩 추가본 — 콘솔에 게시해야 적용됨)
 
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
+**규칙 원본은 저장소의 `firebase/firestore.rules`** (콘솔 Firestore Database → 규칙 탭에 그대로 붙여넣고 **게시**). 이 파일이 항상 최신 기준이다.
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-
-    match /posts/{postId} {
-      allow read: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() &&
-        (resource.data.authorUid == request.auth.uid || isAdmin());
-    }
-
-    match /postLogs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isSignedIn();
-      allow update, delete: if false;
-    }
-
-    match /users/{uid} {
-      allow read: if true;
-      allow create: if isSignedIn() && request.auth.uid == uid;
-      allow update: if isSignedIn() && request.auth.uid == uid;
-      allow delete: if false;
-    }
-
-    match /admins/{uid} {
-      allow read: if isSignedIn() && request.auth.uid == uid;
-      allow write: if false;
-    }
-  }
-}
-```
+- `posts`: 읽기 공개 / 작성은 로그인 / 수정·삭제는 작성자 또는 관리자. 단 **`likes`·`comments` 카운터만 바꾸는 갱신**은 로그인한 누구나 가능.
+- `posts/{id}/comments/{id}`: 읽기 공개 / 작성은 로그인(본인 uid, 1~500자) / 삭제는 댓글 작성자·게시글 작성자·관리자 / 수정 불가.
+- `posts/{id}/likes/{uid}`: 본인만 읽기·생성·삭제.
+- `users/{uid}/scraps/{postId}`: 본인만 읽기·쓰기.
+- `postLogs`(관리자만 읽기), `users`, `admins`는 기존과 동일.
 
 - `users` 컬렉션을 공개 읽기로 열어둔 이유: 게시글 작성자의 자기소개/국가 등을 **비로그인 방문자도 볼 수 있게** 하기 위함(작성자 정보 카드 기능, 아래 8번 참고). 이메일 등 민감한 필드는 화면에 표시만 안 할 뿐 문서 자체는 공개라는 점 인지하고 있을 것.
 - Firestore/Storage 콘솔에서 규칙 텍스트를 붙여넣기만 하고 **"게시" 버튼을 안 누르면 적용 안 됨** — 이 프로젝트 하면서 두 번이나 이걸로 헤맸음. 규칙 수정하면 꼭 게시 버튼 확인.
 
-## 7. Storage 보안 규칙 (현재 적용된 최종본, 동작 확인됨)
+## 7. Storage 보안 규칙 (게시글 사진 경로 추가본 — 콘솔에 게시해야 적용됨)
 
-```
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /profile-images/{uid} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == uid
-        && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
-    }
-  }
-}
-```
+**규칙 원본은 저장소의 `firebase/storage.rules`.** `profile-images/{uid}`(프로필)와 `post-images/{uid}/{파일명}`(게시글 사진) 두 경로만 허용. 둘 다 읽기 공개, 쓰기는 본인 uid 폴더 + 5MB 미만 + `image/*`만. 삭제는 규칙상 불가(앱에서 안 씀).
 
-- `profile-images/{uid}` 경로만 허용됨. **게시글 사진 첨부는 아직 실제 업로드가 아님** — write.jsp/edit.jsp의 "사진 첨부" 입력은 지금도 장식용이고, 실제로는 국가별 고정 이미지(korea.jpg/japan.jpg/world.jpg)를 그대로 씀. 게시글 이미지도 진짜 업로드하려면 Storage 규칙에 `post-images/...` 같은 경로를 추가하고 write.jsp/edit.jsp에 업로드 로직을 새로 붙여야 함.
+- 게시글 사진은 **실제 업로드가 구현됨**(write/edit.jsp → `postsStore.uploadPostImage`). 사진을 안 올리면 국가별 고정 이미지(korea/japan/world.jpg)를 씀. 옛 글은 `imageUrl`이 없어서 계속 `image` 파일명을 씀.
 - PowerShell REST API로 업로드/다운로드 직접 테스트해서 규칙 자체는 정상 동작 확인함 (삭제만 규칙상 막혀있는데, 앱에서 실제로 삭제 기능을 안 쓰니 문제 없음).
 
 ## 8. Firestore 데이터 모델
 
-- **`posts/{postId}`**: `title`, `body`, `country`(`KR`/`JP`/`ETC`), `countryLabel`(예: "한국 여행지"), `style`(`healing`/`food`/`activity`/`shopping`), `image`(파일명), `authorUid`, `authorNickname`, `createdAt`(ISO 문자열), `views`(number), `comments`(number)
+- **`posts/{postId}`**: `title`, `body`, `country`(`KR`/`JP`/`ETC`), `countryLabel`(예: "한국 여행지"), `style`(`healing`/`food`/`activity`/`shopping`), `image`(기본 이미지 파일명), `imageUrl`(업로드한 사진의 Storage URL, 없을 수 있음), `authorUid`, `authorNickname`, `createdAt`(ISO 문자열), `views`(number), `comments`(댓글 수 카운터), `likes`(좋아요 수 카운터, 옛 글엔 없을 수 있음)
+  - 서브컬렉션 `comments/{commentId}`: `body`, `authorUid`, `authorNickname`, `createdAt`
+  - 서브컬렉션 `likes/{uid}`: `createdAt` (문서 존재 = 그 사용자가 좋아요함)
 - **`postLogs/{logId}`**: `type`(`CREATE`/`UPDATE`/`DELETE`), `postId`, `postTitle`, `actorUid`, `actorNickname`, `time`(ISO 문자열) — 게시글 작성/수정/삭제할 때마다 `js/posts-store.js`가 자동으로 기록함
 - **`users/{uid}`**: `nickname`, `email`, `joinedDate`, `status`(현재는 항상 "활성", 정지 기능 없음), `bio`, `country`, `countryOther`, `emailLocal`, `emailDomain`, `emailDomainOther`, `birthday`, `birthdayVisibility`(`public`/`private`), `name`, `nameVisibility`(`public`/`private`), `photoUrl`
   - `signup.jsp`가 가입 시 `nickname`/`email`/`joinedDate`/`status`만 최소로 기록
   - `mypage/edit.jsp`가 나머지 필드까지 채움 (프로필 수정 화면)
+  - 서브컬렉션 `scraps/{postId}`: `postId`, `scrappedAt` (내가 스크랩한 글 목록)
 - **`admins/{uid}`**: 필드 없이 존재 여부만 확인. 콘솔에서만 추가 가능.
 
 ## 9. 페이지/기능 구성
@@ -211,12 +168,12 @@ service firebase.storage {
 |---|---|
 | `index.jsp` | 메인. 국가별 최신 게시물 3개씩(Firestore 실시간 로드), 카테고리 카드, 전체보기/더보기가 `posts.jsp?country=..`/`?style=..`로 필터 지정해서 연결됨 |
 | `posts.jsp` | 게시글 목록. 국가/성향 필터, 검색, 정렬(최신/인기), 작성자 정보 카드, 본인 글(또는 관리자)이면 수정/삭제 버튼 |
-| `posts/detail.jsp` | 상세. Firestore에서 `id` 파라미터로 문서 조회. 작성자 본인/관리자만 수정·삭제 가능 |
-| `posts/write.jsp` | 글쓰기. 비로그인 시 confirm으로 로그인 유도. 여행지 구분(국내/일본/해외) + 여행 성향(힐링/맛집/액티비티/쇼핑) 2중 태그 |
+| `posts/detail.jsp` | 상세. Firestore에서 `id` 파라미터로 문서 조회. 작성자 본인/관리자만 수정·삭제 가능. 좋아요/스크랩 버튼, 댓글 목록·작성·삭제 |
+| `posts/write.jsp` | 글쓰기. 비로그인 시 confirm으로 로그인 유도. 여행지 구분(국내/일본/해외) + 여행 성향(힐링/맛집/액티비티/쇼핑) 2중 태그. 사진 첨부(Storage 업로드) |
 | `posts/edit.jsp` | 수정. 작성자 본인 또는 관리자만 접근 가능(가드 실패 시 상세/목록으로 리다이렉트) |
 | `auth/login.jsp` | 로그인. Firebase Authentication 이메일/비밀번호 |
 | `auth/signup.jsp` | 회원가입. 계정 생성 + `users` 문서 최소 필드 기록 |
-| `mypage.jsp` | **보기 전용** 마이페이지. 프로필 카드 + 내가 쓴 글 목록(수정/삭제 가능) |
+| `mypage.jsp` | **보기 전용** 마이페이지. 프로필 카드 + 내가 쓴 글 목록(수정/삭제 가능) + 스크랩한 글 목록(스크랩 해제 가능) |
 | `mypage/edit.jsp` | 프로필 수정 + 프로필 이미지 업로드(Storage) |
 | `admin/index.jsp` | 관리자 메인. "예시 게시글 시드 추가" 버튼 |
 | `admin/users.jsp` | 회원 관리. `users` 컬렉션 실제 조회, 닉네임/이메일 검색 |
@@ -260,7 +217,9 @@ service firebase.storage {
 ## 12. 아직 안 만든 것 / 기획서상 남은 항목
 
 - `/mypage/edit`은 있지만 회원정보 수정 세부 항목(비밀번호 변경 등)은 기획서 원안과 다르게 단순화됨
-- 게시글 사진 첨부 실제 업로드 (현재는 국가별 고정 이미지)
-- 댓글/좋아요/스크랩 (기획서상 선택 기능, 미확정)
+- **[다음에 할 일 1순위] Firebase 콘솔에 새 규칙 게시 후 동작 확인**: `firebase/firestore.rules`, `firebase/storage.rules`를 각각 콘솔 규칙 탭에 붙여넣고 게시 → 글쓰기(사진 첨부), 댓글, 좋아요, 스크랩, 마이페이지 스크랩 목록을 브라우저에서 눌러보기. 코드는 구현·컴파일 확인까지만 했고 실제 저장 동작은 규칙 게시 전이라 미검증.
+- (구현됨, 위 확인 필요) 게시글 사진 업로드 / 댓글 / 좋아요 / 스크랩. 알려진 한계: 글을 삭제해도 그 글의 댓글·좋아요 서브컬렉션 문서는 남음(화면엔 안 보임), 교체된 옛 사진 파일은 Storage에 남음, 카운터는 클라이언트가 갱신하므로 규칙상 임의 값 변경을 완전히 막진 못함(목업 수준)
 - 회원 관리에서 이용 정지/탈퇴 처리 (기획서상 미확정, 조회만 가능)
 - 모바일 반응형은 로그인/회원가입 화면에만 있고 나머지 화면은 없음
+- 게시글 조회수(`views`)는 화면에 표시만 하고 증가시키는 로직이 없어 항상 0
+- Oracle 전환용 테이블 설계와 Firestore→SQL 컬럼 대응은 `docs/DB-SCHEMA.md`에 정리해 둠 (필수 3개 테이블 + 선택 3개)

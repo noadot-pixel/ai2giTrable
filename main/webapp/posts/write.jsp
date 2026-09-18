@@ -178,6 +178,16 @@
                        name="writePhoto"
                        accept="image/*">
 
+                <p class="write-field-note">
+                    5MB 미만의 이미지 파일만 올릴 수 있습니다.
+                    사진을 올리지 않으면 여행지 구분에 맞는 기본 이미지가 사용됩니다.
+                </p>
+
+                <img id="writePhotoPreview"
+                     class="post-image-preview"
+                     alt="첨부할 사진 미리보기"
+                     hidden>
+
             </div>
 
             <button type="submit"
@@ -243,7 +253,7 @@
 
 
     /*
-     * 국가별 기본 이미지 (사진 첨부는 실제로 업로드/저장하지 않는 목업)
+     * 사진을 올리지 않았을 때 쓰는 국가별 기본 이미지
      */
 
     const DEFAULT_IMAGE_BY_COUNTRY = {
@@ -251,6 +261,44 @@
         JP: "japan.jpg",
         ETC: "world.jpg"
     };
+
+
+    /*
+     * 첨부할 사진을 고르면 바로 미리보기를 보여준다.
+     * 실제 업로드는 등록할 때 한 번만 일어난다.
+     */
+
+    const writePhotoInput =
+        document.getElementById("writePhoto");
+
+    const writePhotoPreview =
+        document.getElementById("writePhotoPreview");
+
+    writePhotoInput.addEventListener("change", function () {
+
+        const file = writePhotoInput.files[0];
+
+        if (!file) {
+            writePhotoPreview.hidden = true;
+            return;
+        }
+
+        const message = postsStore.validateImageFile(file);
+
+        if (message) {
+
+            alert(message);
+
+            writePhotoInput.value = "";
+            writePhotoPreview.hidden = true;
+
+            return;
+        }
+
+        writePhotoPreview.src = URL.createObjectURL(file);
+        writePhotoPreview.hidden = false;
+
+    });
 
     const writeForm =
         document.getElementById("writeForm");
@@ -288,20 +336,43 @@
         const currentUser =
             mockAuth.getCurrentUser();
 
-        const newPostId = await postsStore.createPost({
-            title: title,
-            body: body,
-            country: selectedCountry,
-            countryLabel: selectedCountryLabel,
-            style: selectedStyle,
-            authorUid: currentUser.id,
-            authorNickname: currentUser.nickname,
-            image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
-        });
+        const submitButton =
+            writeForm.querySelector('button[type="submit"]');
 
-        alert("게시글이 등록되었습니다.");
+        submitButton.disabled = true;
 
-        location.href = "<%= contextPath %>/posts/detail.jsp?id=" + newPostId;
+        try {
+
+            const post = {
+                title: title,
+                body: body,
+                country: selectedCountry,
+                countryLabel: selectedCountryLabel,
+                style: selectedStyle,
+                authorUid: currentUser.id,
+                authorNickname: currentUser.nickname,
+                image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
+            };
+
+            const photoFile = writePhotoInput.files[0];
+
+            if (photoFile) {
+                post.imageUrl = await postsStore.uploadPostImage(photoFile);
+            }
+
+            const newPostId = await postsStore.createPost(post);
+
+            alert("게시글이 등록되었습니다.");
+
+            location.href = "<%= contextPath %>/posts/detail.jsp?id=" + newPostId;
+
+        } catch (error) {
+
+            alert("게시글 등록에 실패했습니다: " + error.message);
+
+            submitButton.disabled = false;
+
+        }
 
     });
 </script>

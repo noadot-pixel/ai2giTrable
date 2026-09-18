@@ -222,6 +222,16 @@
                        name="writePhoto"
                        accept="image/*">
 
+                <p class="write-field-note">
+                    5MB 미만의 이미지 파일만 올릴 수 있습니다.
+                    새 사진을 고르지 않으면 지금 사진이 그대로 유지됩니다.
+                </p>
+
+                <img id="writePhotoPreview"
+                     class="post-image-preview"
+                     alt="게시글 사진 미리보기"
+                     hidden>
+
             </div>
 
             <button type="submit"
@@ -256,6 +266,53 @@
 
         document.getElementById("writeTitle").value = targetPost.title;
         document.getElementById("writeBody").value = targetPost.body;
+
+
+        /*
+         * 현재 사진을 미리보기로 보여주고, 새 사진을 고르면 그 사진으로 바꿔 보여준다.
+         * 실제 업로드는 저장할 때 한 번만 일어난다.
+         */
+
+        const writePhotoInput =
+            document.getElementById("writePhoto");
+
+        const writePhotoPreview =
+            document.getElementById("writePhotoPreview");
+
+        writePhotoPreview.src =
+            postsStore.imageSrc(targetPost, "<%= contextPath %>/images/");
+
+        writePhotoPreview.hidden = false;
+
+        writePhotoInput.addEventListener("change", function () {
+
+            const file = writePhotoInput.files[0];
+
+            if (!file) {
+
+                writePhotoPreview.src =
+                    postsStore.imageSrc(targetPost, "<%= contextPath %>/images/");
+
+                return;
+            }
+
+            const message = postsStore.validateImageFile(file);
+
+            if (message) {
+
+                alert(message);
+
+                writePhotoInput.value = "";
+
+                writePhotoPreview.src =
+                    postsStore.imageSrc(targetPost, "<%= contextPath %>/images/");
+
+                return;
+            }
+
+            writePhotoPreview.src = URL.createObjectURL(file);
+
+        });
 
         let selectedCountry = targetPost.country;
         let selectedCountryLabel = targetPost.countryLabel;
@@ -363,18 +420,48 @@
             const actingUser =
                 mockAuth.getCurrentUser();
 
-            await postsStore.updatePost(targetPost.id, {
-                title: title,
-                body: body,
-                country: selectedCountry,
-                countryLabel: selectedCountryLabel,
-                style: selectedStyle,
-                image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
-            }, actingUser.id, actingUser.nickname);
+            const submitButton =
+                editForm.querySelector('button[type="submit"]');
 
-            alert("게시글이 수정되었습니다.");
+            submitButton.disabled = true;
 
-            location.href = "<%= contextPath %>/posts/detail.jsp?id=" + targetPost.id;
+            try {
+
+                const changes = {
+                    title: title,
+                    body: body,
+                    country: selectedCountry,
+                    countryLabel: selectedCountryLabel,
+                    style: selectedStyle,
+                    image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
+                };
+
+                /*
+                 * 새 사진을 골랐을 때만 업로드해서 imageUrl을 바꾼다.
+                 * (관리자가 남의 글을 고칠 때도 업로드는 관리자 본인 폴더에 올라간다.)
+                 */
+
+                const photoFile = writePhotoInput.files[0];
+
+                if (photoFile) {
+                    changes.imageUrl = await postsStore.uploadPostImage(photoFile);
+                }
+
+                await postsStore.updatePost(
+                    targetPost.id, changes, actingUser.id, actingUser.nickname
+                );
+
+                alert("게시글이 수정되었습니다.");
+
+                location.href = "<%= contextPath %>/posts/detail.jsp?id=" + targetPost.id;
+
+            } catch (error) {
+
+                alert("게시글 수정에 실패했습니다: " + error.message);
+
+                submitButton.disabled = false;
+
+            }
 
         });
 

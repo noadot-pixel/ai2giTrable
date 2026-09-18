@@ -50,6 +50,8 @@
         if (!user) {
             throw new Error("로그인 세션이 없습니다. 다시 로그인해 주세요.");
         }
+
+        return user;
     }
 
     async function createPost(data) {
@@ -59,7 +61,8 @@
         const post = Object.assign({
             createdAt: new Date().toISOString(),
             views: 0,
-            comments: 0
+            comments: 0,
+            likes: 0
         }, data);
 
         const ref = await db().collection("posts").add(post);
@@ -183,6 +186,236 @@
         return SEED_POSTS.length;
     }
 
+    /*
+     * ---------------------------------------------------------------
+     * 게시글 사진
+     * Firebase Storage의 post-images/{uid}/{파일명}에 올리고, 글 문서에는
+     * 다운로드 URL을 imageUrl로 저장한다. imageUrl이 없는 글(예시 글 등)은
+     * 기존처럼 images/ 폴더의 image 파일명을 쓴다.
+     * ---------------------------------------------------------------
+     */
+
+    const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+    function imageSrc(post, imagesBase) {
+        return post.imageUrl || (imagesBase + post.image);
+    }
+
+    function validateImageFile(file) {
+
+        if (!file.type || file.type.indexOf("image/") !== 0) {
+            return "이미지 파일만 업로드할 수 있습니다.";
+        }
+
+        if (file.size >= MAX_IMAGE_BYTES) {
+            return "5MB 미만의 이미지만 업로드할 수 있습니다.";
+        }
+
+        return "";
+    }
+
+    async function uploadPostImage(file) {
+
+        const message = validateImageFile(file);
+
+        if (message) {
+            throw new Error(message);
+        }
+
+        const user = await ensureSignedIn();
+
+        const ref = firebase.storage().ref(
+            "post-images/" + user.uid + "/"
+            + Date.now() + "-" + Math.random().toString(36).slice(2, 8)
+        );
+
+        await ref.put(file);
+
+        return ref.getDownloadURL();
+    }
+
+
+    /*
+     * ---------------------------------------------------------------
+     * 댓글: posts/{postId}/comments/{commentId}
+     * 글 문서의 comments 카운터도 같은 batch로 함께 갱신한다.
+     * ---------------------------------------------------------------
+     */
+
+    function postRef(postId) {
+        return db().collection("posts").doc(postId);
+    }
+
+    function increment(n) {
+        return firebase.firestore.FieldValue.increment(n);
+    }
+
+    async function getComments(postId) {
+
+        const snapshot = await postRef(postId)
+            .collection("comments")
+            .orderBy("createdAt", "asc")
+            .get();
+
+        return snapshot.docs.map(function (doc) {
+            return Object.assign({ id: doc.id }, doc.data());
+        });
+    }
+
+    async function addComment(postId, body, authorNickname) {
+
+        const user = await ensureSignedIn();
+
+        const commentRef = postRef(postId).collection("comments").doc();
+
+        const comment = {
+            body: body,
+            authorUid: user.uid,
+            authorNickname: authorNickname,
+            createdAt: new Date().toISOString()
+        };
+
+        const batch = db().batch();
+
+        batch.set(commentRef, comment);
+        batch.update(postRef(postId), { comments: increment(1) });
+
+        await batch.commit();
+
+        return Object.assign({ id: commentRef.id }, comment);
+    }
+
+    async function deleteComment(postId, commentId) {
+
+        await ensureSignedIn();
+
+        const batch = db().batch();
+
+        batch.delete(postRef(postId).collection("comments").doc(commentId));
+        batch.update(postRef(postId), { comments: increment(-1) });
+
+        await batch.commit();
+    }
+
+
+    /*
+     * ---------------------------------------------------------------
+     * 좋아요: posts/{postId}/likes/{uid} (문서가 있으면 좋아요한 상태)
+     * 글 문서의 likes 카운터도 같은 batch로 함께 갱신한다.
+     * 비로그인 상태에서는 항상 false.
+     * ---------------------------------------------------------------
+     */
+
+    async function isLiked(postId) {
+
+        const user = await window.authReady;
+
+        if (!user) {
+            return false;
+        }
+
+        const doc = await postRef(postId).collection("likes").doc(user.uid).get();
+
+        return doc.exists;
+    }
+
+    async function toggleLike(postId) {
+
+        const user = await ensureSignedIn();
+
+        const likeRef = postRef(postId).collection("likes").doc(user.uid);
+
+        const wasLiked = (await likeRef.get()).exists;
+
+        const batch = db().batch();
+
+        if (wasLiked) {
+            batch.delete(likeRef);
+            batch.update(postRef(postId), { likes: increment(-1) });
+        } else {
+            batch.set(likeRef, { createdAt: new Date().toISOString() });
+            batch.update(postRef(postId), { likes: increment(1) });
+        }
+
+        await batch.commit();
+
+        return !wasLiked;
+    }
+
+
+    /*
+     * ---------------------------------------------------------------
+     * 스크랩: users/{uid}/scraps/{postId} (본인만 읽고 쓸 수 있는 개인 목록)
+     * ---------------------------------------------------------------
+     */
+
+    function scrapRef(uid, postId) {
+        return db().collection("users").doc(uid).collection("scraps").doc(postId);
+    }
+
+    async function isScrapped(postId) {
+
+        const user = await window.authReady;
+
+        if (!user) {
+            return false;
+        }
+
+        const doc = await scrapRef(user.uid, postId).get();
+
+        return doc.exists;
+    }
+
+    async function toggleScrap(postId) {
+
+        const user = await ensureSignedIn();
+
+        const ref = scrapRef(user.uid, postId);
+
+        const wasScrapped = (await ref.get()).exists;
+
+        if (wasScrapped) {
+            await ref.delete();
+        } else {
+            await ref.set({
+                postId: postId,
+                scrappedAt: new Date().toISOString()
+            });
+        }
+
+        return !wasScrapped;
+    }
+
+    /*
+     * 내가 스크랩한 글 id 목록 (최근에 스크랩한 순)
+     */
+
+    async function getMyScrapIds() {
+
+        const user = await window.authReady;
+
+        if (!user) {
+            return [];
+        }
+
+        const snapshot = await db()
+            .collection("users").doc(user.uid)
+            .collection("scraps")
+            .get();
+
+        return snapshot.docs
+            .map(function (doc) { return doc.data(); })
+            .sort(function (a, b) { return b.scrappedAt < a.scrappedAt ? -1 : 1; })
+            .map(function (scrap) { return scrap.postId; });
+    }
+
+    async function removeScrap(postId) {
+
+        const user = await ensureSignedIn();
+
+        await scrapRef(user.uid, postId).delete();
+    }
+
     global.postsStore = {
         getAllPosts: getAllPosts,
         getPostById: getPostById,
@@ -190,7 +423,19 @@
         updatePost: updatePost,
         deletePost: deletePost,
         getAllLogs: getAllLogs,
-        seedIfEmpty: seedIfEmpty
+        seedIfEmpty: seedIfEmpty,
+        imageSrc: imageSrc,
+        validateImageFile: validateImageFile,
+        uploadPostImage: uploadPostImage,
+        getComments: getComments,
+        addComment: addComment,
+        deleteComment: deleteComment,
+        isLiked: isLiked,
+        toggleLike: toggleLike,
+        isScrapped: isScrapped,
+        toggleScrap: toggleScrap,
+        getMyScrapIds: getMyScrapIds,
+        removeScrap: removeScrap
     };
 
 })(window);
