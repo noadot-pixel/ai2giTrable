@@ -47,17 +47,25 @@
 
         </nav>
 
-        <div class="member-menu"
-             id="memberMenu">
+        <div class="member-menu">
 
-            <a href="<%= contextPath %>/auth/login.jsp">
-                로그인
+            <a href="<%= contextPath %>/posts/write.jsp"
+               class="write-link">
+                글쓰기
             </a>
 
-            <a href="#"
-               class="join-button">
-                회원가입
-            </a>
+            <span id="memberMenu">
+
+                <a href="<%= contextPath %>/auth/login.jsp">
+                    로그인
+                </a>
+
+                <a href="#"
+                   class="join-button">
+                    회원가입
+                </a>
+
+            </span>
 
         </div>
 

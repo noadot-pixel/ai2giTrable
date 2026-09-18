@@ -523,7 +523,7 @@
                 함께 공유해 보세요.
             </p>
 
-            <a href="#">
+            <a href="<%= contextPath %>/posts/write.jsp">
                 여행 이야기 작성하기
             </a>
 

@@ -88,6 +88,15 @@
     font-size: 14px;
 }
 
+/* 로그인 상태에 따라 내용만 바뀌는 부분이 gap을 그대로 물려받도록 함 */
+#memberMenu {
+    display: contents;
+}
+
+.write-link {
+    font-weight: 700;
+}
+
 .join-button {
     padding: 11px 18px;
     color: white;
@@ -1206,5 +1215,71 @@
 
 .detail-back a:hover {
     color: var(--blue);
+}
+
+/* =========================
+   게시글 작성 (posts/write.jsp)
+========================= */
+
+.write-section {
+    max-width: 720px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+}
+
+.write-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.write-field label {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.write-field input[type="text"],
+.write-field textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: #f8fbfe;
+    color: var(--text-color);
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.write-field input[type="text"]:focus,
+.write-field textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    background-color: white;
+}
+
+.write-field input[type="file"] {
+    font-size: 13px;
+}
+
+.write-section .filter-group {
+    margin: 0 0 20px;
+}
+
+.write-section .auth-submit {
+    margin-top: 8px;
+}
+
+/* 목록에 표시되는 내가 쓴 글 표시 */
+
+.my-post-badge {
+    padding: 2px 8px;
+    color: var(--blue);
+    border-radius: 10px;
+    background-color: var(--light-blue);
+    font-weight: 700;
 }
 

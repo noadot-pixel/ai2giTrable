@@ -614,6 +614,80 @@
     const postList =
         document.getElementById("postList");
 
+
+    /*
+     * 글쓰기 화면에서 저장한 게시글(localStorage)을 목록 맨 앞에 추가한다.
+     * 실제 저장소가 아니라 이 브라우저에만 남는 임시 데이터이며,
+     * 상세 페이지가 아직 없어 클릭하면 안내만 표시한다.
+     */
+
+    function escapeHtml(text) {
+
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    (function renderLocalPosts() {
+
+        const savedPosts =
+            JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
+
+        if (savedPosts.length === 0) {
+            return;
+        }
+
+        const currentUser =
+            mockAuth.getCurrentUser();
+
+        savedPosts.forEach(function (post) {
+
+            const isMine =
+                currentUser && currentUser.nickname === post.author;
+
+            const article =
+                document.createElement("article");
+
+            article.className = "story-card";
+            article.dataset.country = post.country;
+            article.dataset.style = post.style;
+            article.dataset.date = post.dataDate;
+            article.dataset.views = "0";
+
+            article.innerHTML =
+                '<a href="#" class="story-image local-post-link">'
+                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="#" class="local-post-link">' + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span>' + escapeHtml(post.author) + '</span>'
+                + (isMine ? '<span class="my-post-badge">내 글</span>' : '')
+                + '<span>' + post.displayDate + '</span>'
+                + '<span>조회 0</span>'
+                + '<span>댓글 0</span>'
+                + '</div></div>';
+
+            postList.insertBefore(article, postList.firstChild);
+
+        });
+
+        postList.addEventListener("click", function (event) {
+
+            if (event.target.closest(".local-post-link")) {
+
+                event.preventDefault();
+
+                alert("직접 작성한 게시글은 데모용이라 상세 페이지가 아직 연결되지 않았어요.");
+            }
+
+        });
+
+    })();
+
+
     const postCards =
         Array.from(postList.querySelectorAll(".story-card"));
 
