@@ -110,7 +110,7 @@
 
             <h2>여행 카테고리</h2>
 
-            <a href="#">
+            <a href="<%= contextPath %>/posts.jsp">
                 전체보기 〉
             </a>
 
@@ -176,7 +176,7 @@
             </a>
 
             <!-- 여행지 맛집 -->
-            <a href="#"
+            <a href="<%= contextPath %>/posts.jsp?style=food"
                class="category-card">
 
                 <img src="<%= contextPath %>/images/travel_food.jpg"
@@ -209,7 +209,7 @@
 
             <h2>📝 최신 여행 이야기</h2>
 
-            <a href="#">
+            <a href="<%= contextPath %>/posts.jsp">
                 전체보기 〉
             </a>
 
@@ -230,7 +230,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts.jsp?country=KR">
                         더보기 〉
                     </a>
 
@@ -262,7 +262,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts.jsp?country=JP">
                         더보기 〉
                     </a>
 
@@ -294,7 +294,7 @@
 
                     <span>최신순</span>
 
-                    <a href="#">
+                    <a href="<%= contextPath %>/posts.jsp?country=ETC">
                         더보기 〉
                     </a>
 

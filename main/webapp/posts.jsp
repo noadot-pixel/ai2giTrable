@@ -556,6 +556,65 @@
     });
 
 
+    /*
+     * index.jsp의 "전체보기"/"더보기" 링크에서 넘어온 country/style
+     * 쿼리 파라미터가 있으면 해당 필터를 미리 선택된 상태로 적용한다.
+     * 예: posts.jsp?country=KR, posts.jsp?style=food
+     */
+
+    function applyInitialFilterFromUrl() {
+
+        const params =
+            new URLSearchParams(location.search);
+
+        const initialCountry = params.get("country");
+        const initialStyle = params.get("style");
+
+        if (initialCountry) {
+
+            const countryButton =
+                document.querySelector(
+                    '#countryFilter .filter-button[data-country="' + initialCountry + '"]'
+                );
+
+            if (countryButton) {
+
+                document.querySelectorAll("#countryFilter .filter-button")
+                    .forEach(function (other) {
+                        other.classList.remove("active");
+                    });
+
+                countryButton.classList.add("active");
+
+                currentCountry = initialCountry;
+            }
+
+        }
+
+        if (initialStyle) {
+
+            const styleButton =
+                document.querySelector(
+                    '#styleFilter .filter-button[data-style="' + initialStyle + '"]'
+                );
+
+            if (styleButton) {
+
+                document.querySelectorAll("#styleFilter .filter-button")
+                    .forEach(function (other) {
+                        other.classList.remove("active");
+                    });
+
+                styleButton.classList.add("active");
+
+                currentStyle = initialStyle;
+            }
+
+        }
+
+    }
+
+    applyInitialFilterFromUrl();
     loadPosts();
 </script>
 
