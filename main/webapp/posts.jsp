@@ -164,7 +164,7 @@
     <section class="list-heading">
 
         <p id="resultCount">
-            전체 게시글 <strong>9</strong>개
+            전체 게시글 <strong>0</strong>개
         </p>
 
         <div class="sort-group"
@@ -193,376 +193,7 @@
     <section class="post-list"
              id="postList">
 
-        <!-- 실제 게시물에는 data-country, data-style, data-date, data-views를 입력 -->
-
-        <article class="story-card"
-                 data-country="KR"
-                 data-style="healing"
-                 data-date="2026-09-10"
-                 data-views="892">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=1"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/jeju.jpg"
-                     alt="제주도 2박 3일 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    한국 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=1">
-                        제주도 2박 3일 힐링 여행
-                    </a>
-                </h3>
-
-                <p>
-                    아름다운 바다와 카페, 맛집까지
-                    알차게 다녀온 제주 여행 기록입니다.
-                </p>
-
-                <div class="story-information">
-                    <span>바다소년</span>
-                    <span>2026.09.10</span>
-                    <span>조회 892</span>
-                    <span>댓글 18</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="KR"
-                 data-style="food"
-                 data-date="2026-09-05"
-                 data-views="1560">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=2"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/korea.jpg"
-                     alt="부산 해운대 맛집 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    한국 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=2">
-                        부산 해운대 맛집 총정리
-                    </a>
-                </h3>
-
-                <p>
-                    해운대 근처에서 직접 먹어보고 고른
-                    진짜 맛집만 모았습니다.
-                </p>
-
-                <div class="story-information">
-                    <span>먹부림</span>
-                    <span>2026.09.05</span>
-                    <span>조회 1,560</span>
-                    <span>댓글 27</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="KR"
-                 data-style="activity"
-                 data-date="2026-09-14"
-                 data-views="430">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=3"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/korea.jpg"
-                     alt="서울 근교 액티비티 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    한국 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=3">
-                        서울 근교 당일치기 액티비티 코스
-                    </a>
-                </h3>
-
-                <p>
-                    짧은 시간에도 알차게 즐길 수 있는
-                    액티비티 코스를 소개합니다.
-                </p>
-
-                <div class="story-information">
-                    <span>주말러</span>
-                    <span>2026.09.14</span>
-                    <span>조회 430</span>
-                    <span>댓글 5</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="JP"
-                 data-style="food"
-                 data-date="2026-09-12"
-                 data-views="1245">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=4"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/fukuoka.jpg"
-                     alt="후쿠오카 3박 4일 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    일본 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=4">
-                        후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행
-                    </a>
-                </h3>
-
-                <p>
-                    첫 일본 자유여행에서 만족했던 맛집과
-                    숙소, 교통 정보를 정리했습니다.
-                </p>
-
-                <div class="story-information">
-                    <span>여행좋아</span>
-                    <span>2026.09.12</span>
-                    <span>조회 1,245</span>
-                    <span>댓글 32</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="JP"
-                 data-style="shopping"
-                 data-date="2026-09-01"
-                 data-views="980">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=5"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/japan.jpg"
-                     alt="오사카 쇼핑 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    일본 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=5">
-                        오사카 쇼핑 스팟 완전 정리
-                    </a>
-                </h3>
-
-                <p>
-                    도톤보리부터 신사이바시까지 쇼핑
-                    동선을 그대로 공유합니다.
-                </p>
-
-                <div class="story-information">
-                    <span>쇼퍼홀릭</span>
-                    <span>2026.09.01</span>
-                    <span>조회 980</span>
-                    <span>댓글 14</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="JP"
-                 data-style="activity"
-                 data-date="2026-09-13"
-                 data-views="2210">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=6"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/japan.jpg"
-                     alt="도쿄 디즈니랜드 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    일본 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=6">
-                        도쿄 디즈니랜드 완전 정복기
-                    </a>
-                </h3>
-
-                <p>
-                    대기 시간을 줄이는 동선과 꿀팁까지
-                    한 번에 정리했습니다.
-                </p>
-
-                <div class="story-information">
-                    <span>디즈니덕후</span>
-                    <span>2026.09.13</span>
-                    <span>조회 2,210</span>
-                    <span>댓글 45</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="ETC"
-                 data-style="healing"
-                 data-date="2026-09-08"
-                 data-views="2103">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=7"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/barcelona.jpg"
-                     alt="스페인 바르셀로나 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    세계 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=7">
-                        처음 떠나는 유럽, 스페인 바르셀로나
-                    </a>
-                </h3>
-
-                <p>
-                    캄프 누에서의 열정을 느낄 수 있는
-                    바르셀로나 여행을 준비합니다.
-                </p>
-
-                <div class="story-information">
-                    <span>길위에서</span>
-                    <span>2026.09.08</span>
-                    <span>조회 2,103</span>
-                    <span>댓글 41</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="ETC"
-                 data-style="food"
-                 data-date="2026-08-30"
-                 data-views="1670">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=8"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/world.jpg"
-                     alt="방콕 맛집 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    세계 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=8">
-                        방콕 길거리 맛집 탐방기
-                    </a>
-                </h3>
-
-                <p>
-                    현지인 추천 노점부터 유명 맛집까지
-                    직접 다녀온 후기입니다.
-                </p>
-
-                <div class="story-information">
-                    <span>street food</span>
-                    <span>2026.08.30</span>
-                    <span>조회 1,670</span>
-                    <span>댓글 23</span>
-                </div>
-
-            </div>
-
-        </article>
-
-        <article class="story-card"
-                 data-country="ETC"
-                 data-style="shopping"
-                 data-date="2026-09-03"
-                 data-views="760">
-
-            <a href="<%= contextPath %>/posts/detail.jsp?id=9"
-               class="story-image">
-
-                <img src="<%= contextPath %>/images/world.jpg"
-                     alt="파리 쇼핑 여행">
-            </a>
-
-            <div class="story-content">
-
-                <span class="story-category">
-                    세계 여행지
-                </span>
-
-                <h3>
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=9">
-                        파리에서 놓치면 안 되는 쇼핑 리스트
-                    </a>
-                </h3>
-
-                <p>
-                    면세 쇼핑부터 로컬 편집숍까지
-                    동선대로 정리했습니다.
-                </p>
-
-                <div class="story-information">
-                    <span>파리지앵</span>
-                    <span>2026.09.03</span>
-                    <span>조회 760</span>
-                    <span>댓글 9</span>
-                </div>
-
-            </div>
-
-        </article>
+        <!-- Firestore에서 불러온 게시글 카드가 여기에 채워진다 -->
 
     </section>
 
@@ -610,130 +241,11 @@
 
 <%@ include file="/common/auth-scripts.jspf" %>
 
+<script src="<%= contextPath %>/js/posts-store.js"></script>
+
 <script>
     const postList =
         document.getElementById("postList");
-
-
-    /*
-     * 글쓰기 화면에서 저장한 게시글(localStorage)을 목록 맨 앞에 추가한다.
-     * 실제 저장소가 아니라 이 브라우저에만 남는 임시 데이터이며,
-     * 상세 페이지가 아직 없어 클릭하면 안내만 표시한다.
-     */
-
-    function escapeHtml(text) {
-
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function renderLocalPosts() {
-
-        const savedPosts =
-            JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
-
-        if (savedPosts.length === 0) {
-            return;
-        }
-
-        const currentUser =
-            mockAuth.getCurrentUser();
-
-        savedPosts.forEach(function (post) {
-
-            const isMine =
-                currentUser && currentUser.nickname === post.author;
-
-            const article =
-                document.createElement("article");
-
-            article.className = "story-card";
-            article.dataset.localId = post.id;
-            article.dataset.country = post.country;
-            article.dataset.style = post.style;
-            article.dataset.date = post.dataDate;
-            article.dataset.views = "0";
-
-            const actionsHtml = isMine
-                ? '<div class="detail-actions local-post-actions">'
-                    + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
-                    + '<button type="button" class="detail-delete-button local-delete-button">삭제</button>'
-                    + '</div>'
-                : '';
-
-            article.innerHTML =
-                '<a href="#" class="story-image local-post-link">'
-                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
-                + escapeHtml(post.title) + '"></a>'
-                + '<div class="story-content">'
-                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
-                + '<h3><a href="#" class="local-post-link">' + escapeHtml(post.title) + '</a></h3>'
-                + '<p>' + escapeHtml(post.body) + '</p>'
-                + '<div class="story-information">'
-                + '<span>' + escapeHtml(post.author) + '</span>'
-                + (isMine ? '<span class="my-post-badge">내 글</span>' : '')
-                + '<span>' + post.displayDate + '</span>'
-                + '<span>조회 0</span>'
-                + '<span>댓글 0</span>'
-                + '</div>'
-                + actionsHtml
-                + '</div>';
-
-            postList.insertBefore(article, postList.firstChild);
-
-        });
-
-    }
-
-    renderLocalPosts();
-
-    postList.addEventListener("click", function (event) {
-
-        const deleteButton = event.target.closest(".local-delete-button");
-
-        if (deleteButton) {
-
-            const card = deleteButton.closest(".story-card");
-            const localId = card.dataset.localId;
-
-            const isConfirmed =
-                confirm("이 게시글을 삭제하시겠습니까?");
-
-            if (!isConfirmed) {
-                return;
-            }
-
-            const savedPosts =
-                JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
-
-            const remainingPosts =
-                savedPosts.filter(function (post) {
-                    return post.id !== localId;
-                });
-
-            localStorage.setItem(
-                "trable_mock_posts",
-                JSON.stringify(remainingPosts)
-            );
-
-            location.reload();
-
-            return;
-        }
-
-        if (event.target.closest(".local-post-link")) {
-
-            event.preventDefault();
-
-            alert("직접 작성한 게시글은 데모용이라 상세 페이지가 아직 연결되지 않았어요.");
-        }
-
-    });
-
-
-    const postCards =
-        Array.from(postList.querySelectorAll(".story-card"));
 
     const resultCount =
         document.getElementById("resultCount");
@@ -747,6 +259,115 @@
     let currentCountry = "ALL";
     let currentStyle = "ALL";
     let currentKeyword = "";
+
+    let postCards = [];
+
+    function escapeHtml(text) {
+
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /*
+     * Firestore의 posts 컬렉션을 읽어 카드로 렌더링한다.
+     * 작성자 본인 글에만 수정/삭제 버튼이 붙는다.
+     */
+
+    async function loadPosts() {
+
+        const posts = await postsStore.getAllPosts();
+
+        const currentUser =
+            mockAuth.getCurrentUser();
+
+        postList.innerHTML = "";
+
+        posts.forEach(function (post) {
+
+            const isMine =
+                currentUser && currentUser.id === post.authorUid;
+
+            const article =
+                document.createElement("article");
+
+            article.className = "story-card";
+            article.dataset.postId = post.id;
+            article.dataset.country = post.country;
+            article.dataset.style = post.style;
+            article.dataset.date = post.createdAt;
+            article.dataset.views = post.views || 0;
+
+            const displayDate =
+                post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "";
+
+            const actionsHtml = isMine
+                ? '<div class="detail-actions local-post-actions">'
+                    + '<a href="<%= contextPath %>/posts/edit.jsp?id=' + post.id + '" class="detail-edit-button">수정</a>'
+                    + '<button type="button" class="detail-delete-button" data-post-id="' + post.id + '">삭제</button>'
+                    + '</div>'
+                : '';
+
+            article.innerHTML =
+                '<a href="<%= contextPath %>/posts/detail.jsp?id=' + post.id + '" class="story-image">'
+                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="<%= contextPath %>/posts/detail.jsp?id=' + post.id + '">'
+                + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span>' + escapeHtml(post.authorNickname) + '</span>'
+                + (isMine ? '<span class="my-post-badge">내 글</span>' : '')
+                + '<span>' + displayDate + '</span>'
+                + '<span>조회 ' + (post.views || 0) + '</span>'
+                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '</div>'
+                + actionsHtml
+                + '</div>';
+
+            postList.appendChild(article);
+
+        });
+
+        postCards = Array.from(postList.querySelectorAll(".story-card"));
+
+        sortPostList("latest");
+        applyFilters();
+
+    }
+
+    postList.addEventListener("click", async function (event) {
+
+        const deleteButton = event.target.closest(".detail-delete-button");
+
+        if (!deleteButton) {
+            return;
+        }
+
+        const isConfirmed =
+            confirm("이 게시글을 삭제하시겠습니까?");
+
+        if (!isConfirmed) {
+            return;
+        }
+
+        const postId = deleteButton.dataset.postId;
+        const card = deleteButton.closest(".story-card");
+        const postTitle = card.querySelector("h3 a").textContent.trim();
+        const currentUser = mockAuth.getCurrentUser();
+
+        await postsStore.deletePost(
+            postId,
+            postTitle,
+            currentUser.id,
+            currentUser.nickname
+        );
+
+        loadPosts();
+
+    });
 
 
     /*
@@ -935,8 +556,7 @@
     });
 
 
-    sortPostList("latest");
-    applyFilters();
+    loadPosts();
 </script>
 
 </body>

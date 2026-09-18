@@ -150,33 +150,12 @@
     }
 </script>
 
-<script type="module">
+<script>
     /*
      * Firebase Authentication(이메일/비밀번호)으로 실제 계정을 검증한다.
      * Firebase 콘솔의 Authentication > Users에 미리 등록된 계정만 로그인 가능.
      * 로그인에 성공하면 화면 표시용 mockAuth(localStorage)에도 반영한다.
      */
-
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-
-    import {
-        getAuth,
-        signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAythcpdfR-tuSQEzFkw8EKRwNEfnC7bJE",
-        authDomain: "ai2gi-project-01.firebaseapp.com",
-        projectId: "ai2gi-project-01",
-        storageBucket: "ai2gi-project-01.firebasestorage.app",
-        messagingSenderId: "34655357322",
-        appId: "1:34655357322:web:d7f146b0ccd5bc15f3a073"
-    };
-
-    const firebaseApp = initializeApp(firebaseConfig);
-    const auth = getAuth(firebaseApp);
 
     const loginForm =
         document.getElementById("loginForm");
@@ -212,7 +191,7 @@
             return;
         }
 
-        signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        firebase.auth().signInWithEmailAndPassword(loginEmail, loginPassword)
             .then(function (userCredential) {
 
                 const firebaseUser = userCredential.user;
@@ -220,7 +199,7 @@
                 mockAuth.login({
                     id: firebaseUser.uid,
                     email: firebaseUser.email,
-                    nickname: firebaseUser.email.split("@")[0]
+                    nickname: firebaseUser.displayName || firebaseUser.email.split("@")[0]
                 });
 
                 location.href = "<%= contextPath %>/index.jsp";

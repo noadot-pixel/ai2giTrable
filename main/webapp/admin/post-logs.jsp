@@ -26,21 +26,32 @@
 
 <body>
 
+<%@ include file="/common/firebase-init.jspf" %>
+
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
 
 <script>
-    if (!mockAuth.isLoggedIn()) {
+    (async function guardAdminAccess() {
 
-        alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
+        if (!mockAuth.isLoggedIn()) {
 
-        location.href = "<%= contextPath %>/auth/login.jsp";
+            alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
 
-    } else if (!mockAuth.isAdmin()) {
+            location.href = "<%= contextPath %>/auth/login.jsp";
 
-        alert("관리자 권한이 없습니다.");
+            return;
+        }
 
-        location.href = "<%= contextPath %>/index.jsp";
-    }
+        const isAdmin = await mockAuth.isAdmin();
+
+        if (!isAdmin) {
+
+            alert("관리자 권한이 없습니다.");
+
+            location.href = "<%= contextPath %>/index.jsp";
+        }
+
+    })();
 </script>
 
 <% String activeNav = ""; %>
@@ -50,7 +61,7 @@
 
     <!-- =========================
          게시글 로그
-         실제 이력 저장소는 없고, 화면 확인용 하드코딩된 로그다.
+         Firestore의 postLogs 컬렉션(작성/수정/삭제 시 자동 기록됨)을 조회한다.
          작업 종류·검색어로 클라이언트 필터링만 동작한다.
          저장 항목/보관 기간은 기획서상 미확정이라 예시 항목만 사용한다.
     ========================== -->
@@ -167,30 +178,16 @@
 
 <%@ include file="/common/auth-scripts.jspf" %>
 
-<script>
-    /*
-     * 실제로는 게시글 작성/수정/삭제 시점마다 서버에 기록해야 하지만
-     * 지금은 화면 확인용 하드코딩 데이터를 사용한다.
-     */
+<script src="<%= contextPath %>/js/posts-store.js"></script>
 
+<script>
     const LOG_TYPE_LABEL = {
         CREATE: "작성",
         UPDATE: "수정",
         DELETE: "삭제"
     };
 
-    const MOCK_LOGS = [
-        { type: "CREATE", time: "2026-09-10 09:12", postTitle: "제주도 2박 3일 힐링 여행", actor: "바다소년" },
-        { type: "CREATE", time: "2026-09-05 14:03", postTitle: "부산 해운대 맛집 총정리", actor: "먹부림" },
-        { type: "UPDATE", time: "2026-09-06 08:41", postTitle: "부산 해운대 맛집 총정리", actor: "먹부림" },
-        { type: "CREATE", time: "2026-09-12 11:27", postTitle: "후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행", actor: "여행좋아" },
-        { type: "CREATE", time: "2026-09-01 19:55", postTitle: "오사카 쇼핑 스팟 완전 정리", actor: "쇼퍼홀릭" },
-        { type: "UPDATE", time: "2026-09-02 10:02", postTitle: "오사카 쇼핑 스팟 완전 정리", actor: "쇼퍼홀릭" },
-        { type: "CREATE", time: "2026-09-13 20:14", postTitle: "도쿄 디즈니랜드 완전 정복기", actor: "디즈니덕후" },
-        { type: "CREATE", time: "2026-09-08 13:36", postTitle: "처음 떠나는 유럽, 스페인 바르셀로나", actor: "길위에서" },
-        { type: "DELETE", time: "2026-09-09 21:47", postTitle: "(삭제됨) 바르셀로나 야경 스팟", actor: "길위에서" },
-        { type: "CREATE", time: "2026-09-03 16:20", postTitle: "파리에서 놓치면 안 되는 쇼핑 리스트", actor: "파리지앵" }
-    ];
+    let allLogs = [];
 
     const logTableBody =
         document.getElementById("logTableBody");
@@ -213,15 +210,18 @@
 
     function renderLogTable() {
 
-        const filtered = MOCK_LOGS.filter(function (log) {
+        const filtered = allLogs.filter(function (log) {
 
             const matchesType =
                 currentLogType === "ALL" || log.type === currentLogType;
 
+            const actorNickname = log.actorNickname || "";
+            const postTitle = log.postTitle || "";
+
             const matchesKeyword =
                 currentLogKeyword === ""
-                || log.postTitle.toLowerCase().indexOf(currentLogKeyword) !== -1
-                || log.actor.toLowerCase().indexOf(currentLogKeyword) !== -1;
+                || postTitle.toLowerCase().indexOf(currentLogKeyword) !== -1
+                || actorNickname.toLowerCase().indexOf(currentLogKeyword) !== -1;
 
             return matchesType && matchesKeyword;
 
@@ -229,12 +229,15 @@
 
         logTableBody.innerHTML = filtered.map(function (log) {
 
+            const displayTime =
+                log.time ? log.time.slice(0, 16).replace("T", " ") : "";
+
             return "<tr>"
                 + "<td><span class=\"admin-log-type admin-log-" + log.type.toLowerCase() + "\">"
                 + LOG_TYPE_LABEL[log.type] + "</span></td>"
-                + "<td>" + log.time + "</td>"
-                + "<td>" + escapeHtml(log.postTitle) + "</td>"
-                + "<td>" + escapeHtml(log.actor) + "</td>"
+                + "<td>" + displayTime + "</td>"
+                + "<td>" + escapeHtml(log.postTitle || "") + "</td>"
+                + "<td>" + escapeHtml(log.actorNickname || "") + "</td>"
                 + "</tr>";
 
         }).join("");
@@ -246,7 +249,14 @@
 
     }
 
-    renderLogTable();
+    async function loadLogs() {
+
+        allLogs = await postsStore.getAllLogs();
+
+        renderLogTable();
+    }
+
+    loadLogs();
 
 
     const logTypeButtons =

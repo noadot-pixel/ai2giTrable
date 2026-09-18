@@ -1,0 +1,25 @@
+<%@ page pageEncoding="UTF-8" %>
+<%--
+    Firebase 앱 초기화 (Authentication + Firestore 공용, compat 빌드).
+    이 조각을 먼저 include한 뒤에는 전역 firebase 객체를 그대로 쓰면 된다.
+    예: firebase.auth(), firebase.firestore()
+--%>
+
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAythcpdfR-tuSQEzFkw8EKRwNEfnC7bJE",
+        authDomain: "ai2gi-project-01.firebaseapp.com",
+        projectId: "ai2gi-project-01",
+        storageBucket: "ai2gi-project-01.firebasestorage.app",
+        messagingSenderId: "34655357322",
+        appId: "1:34655357322:web:d7f146b0ccd5bc15f3a073"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+</script>

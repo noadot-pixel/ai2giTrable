@@ -6,10 +6,12 @@
     String contextPath = request.getContextPath();
 --%>
 
+<%@ include file="/common/firebase-init.jspf" %>
+
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
 
 <script>
-    (function renderMemberMenu() {
+    (async function renderMemberMenu() {
 
         const memberMenu =
             document.getElementById("memberMenu");
@@ -21,7 +23,10 @@
             return;
         }
 
-        const adminLinkHtml = mockAuth.isAdmin()
+        const isAdmin =
+            await mockAuth.isAdmin();
+
+        const adminLinkHtml = isAdmin
             ? '<a href="<%= contextPath %>/admin/index.jsp">관리자</a>'
             : '';
 

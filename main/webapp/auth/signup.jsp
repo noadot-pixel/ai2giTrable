@@ -173,33 +173,12 @@
     }
 </script>
 
-<script type="module">
+<script>
     /*
-     * Firebase Authentication(이메일/비밀번호)으로 실제 계정을 생성한다.
-     * 로그인 화면과 같은 Firebase 프로젝트를 그대로 사용한다.
+     * Firebase Authentication(이메일/비밀번호)으로 실제 계정을 생성하고,
+     * 관리자 화면(회원 관리)에서 조회할 수 있도록 Firestore users 컬렉션에도
+     * 같은 uid로 기본 정보를 기록한다.
      */
-
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-
-    import {
-        getAuth,
-        createUserWithEmailAndPassword,
-        updateProfile
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAythcpdfR-tuSQEzFkw8EKRwNEfnC7bJE",
-        authDomain: "ai2gi-project-01.firebaseapp.com",
-        projectId: "ai2gi-project-01",
-        storageBucket: "ai2gi-project-01.firebasestorage.app",
-        messagingSenderId: "34655357322",
-        appId: "1:34655357322:web:d7f146b0ccd5bc15f3a073"
-    };
-
-    const firebaseApp = initializeApp(firebaseConfig);
-    const auth = getAuth(firebaseApp);
 
     const signupForm =
         document.getElementById("signupForm");
@@ -260,19 +239,33 @@
             return;
         }
 
-        createUserWithEmailAndPassword(auth, email, password)
+        firebase.auth().createUserWithEmailAndPassword(email, password)
             .then(function (userCredential) {
 
-                return updateProfile(userCredential.user, {
+                return userCredential.user.updateProfile({
                     displayName: nickname
                 }).then(function () {
-                    return userCredential;
+                    return userCredential.user;
                 });
 
             })
-            .then(function (userCredential) {
+            .then(function (firebaseUser) {
 
-                const firebaseUser = userCredential.user;
+                return firebase.firestore()
+                    .collection("users")
+                    .doc(firebaseUser.uid)
+                    .set({
+                        nickname: nickname,
+                        email: firebaseUser.email,
+                        joinedDate: new Date().toISOString().slice(0, 10),
+                        status: "활성"
+                    })
+                    .then(function () {
+                        return firebaseUser;
+                    });
+
+            })
+            .then(function (firebaseUser) {
 
                 mockAuth.login({
                     id: firebaseUser.uid,

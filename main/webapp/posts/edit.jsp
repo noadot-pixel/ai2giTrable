@@ -26,85 +26,73 @@
 
 <body>
 
+<%@ include file="/common/firebase-init.jspf" %>
+
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
+<script src="<%= contextPath %>/js/posts-store.js"></script>
 
 <script>
     /*
      * 게시글 수정은 글쓰기와 거의 같은 화면이지만,
-     * (1) 로그인 여부 + (2) 이 게시글의 작성자 본인인지까지 확인한다.
+     * (1) 로그인 여부 + (2) 이 게시글의 작성자 본인(또는 관리자)인지까지 확인한다.
      *
-     * 예시로 넣어둔 1~9번 게시글은 실제 계정과 연결된 데이터가 아니라서
-     * (localStorage에 없음) 수정 대상이 될 수 없다. 지금 수정이 가능한 건
-     * 글쓰기 화면에서 이 브라우저로 직접 작성해 localStorage에 저장된
-     * 게시글뿐이다.
+     * 아래 변수는 모든 검사를 통과했을 때만 실제 값이 채워진다.
+     * guardPassed가 false면 이 페이지의 나머지 스크립트는 아무 것도
+     * 하지 않고 리다이렉트가 끝나기를 기다린다.
      */
 
     const params = new URLSearchParams(location.search);
     const editId = params.get("id") || "";
 
     /*
-     * 아래 세 변수는 모든 검사를 통과했을 때만 실제 값이 채워진다.
-     * guardPassed가 false면 이 페이지의 나머지 스크립트는 아무 것도
-     * 하지 않고 리다이렉트가 끝나기를 기다린다.
+     * 이 Promise가 게시글(권한 통과 시) 또는 null(리다이렉트 중)로
+     * 해결된다. HTML 파싱과 동시에 바로 시작해서, 폼 DOM이 준비된 뒤
+     * 아래쪽 스크립트에서 await로 이어받아 쓴다.
      */
 
-    let guardPassed = false;
-    let savedPosts = [];
-    let targetIndex = -1;
-    let targetPost = null;
+    const editGuardPromise = (async function guardEditAccess() {
 
-    if (!mockAuth.isLoggedIn()) {
+        if (!mockAuth.isLoggedIn()) {
 
-        const shouldGoToLogin = confirm(
-            "게시글 수정은 로그인 후 이용할 수 있습니다. 로그인 페이지로 이동하시겠습니까?"
-        );
+            const shouldGoToLogin = confirm(
+                "게시글 수정은 로그인 후 이용할 수 있습니다. 로그인 페이지로 이동하시겠습니까?"
+            );
 
-        location.href = shouldGoToLogin
-            ? "<%= contextPath %>/auth/login.jsp"
-            : "<%= contextPath %>/posts.jsp";
+            location.href = shouldGoToLogin
+                ? "<%= contextPath %>/auth/login.jsp"
+                : "<%= contextPath %>/posts.jsp";
 
-    } else if (!editId.startsWith("local-")) {
+            return null;
+        }
 
-        alert("예시로 제공된 게시글이라 수정할 수 없습니다.");
+        const post = editId
+            ? await postsStore.getPostById(editId)
+            : null;
 
-        location.href = "<%= contextPath %>/posts.jsp";
-
-    } else {
-
-        savedPosts =
-            JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
-
-        targetIndex =
-            savedPosts.findIndex(function (post) {
-                return post.id === editId;
-            });
-
-        if (targetIndex === -1) {
+        if (!post) {
 
             alert("게시글을 찾을 수 없습니다.");
 
             location.href = "<%= contextPath %>/posts.jsp";
 
-        } else {
-
-            targetPost = savedPosts[targetIndex];
-
-            const currentUser = mockAuth.getCurrentUser();
-
-            if (!currentUser || currentUser.nickname !== targetPost.author) {
-
-                alert("본인이 작성한 게시글만 수정할 수 있습니다.");
-
-                location.href = "<%= contextPath %>/posts.jsp";
-
-            } else {
-
-                guardPassed = true;
-            }
-
+            return null;
         }
 
-    }
+        const currentUser = mockAuth.getCurrentUser();
+        const isAdmin = await mockAuth.isAdmin();
+
+        if (currentUser.id !== post.authorUid && !isAdmin) {
+
+            alert("본인이 작성한 게시글만 수정할 수 있습니다.");
+
+            location.href = "<%= contextPath %>/posts/detail.jsp?id=" + editId;
+
+            return null;
+        }
+
+        return post;
+
+    })();
 </script>
 
 <% String activeNav = "posts"; %>
@@ -114,8 +102,8 @@
 
     <!-- =========================
          게시글 수정
-         글쓰기 화면과 같은 구조이며, 기존 값을 미리 채운 뒤
-         같은 id로 localStorage 항목을 덮어쓰는 방식으로 동작한다.
+         글쓰기 화면과 같은 구조이며, Firestore에서 기존 값을 불러와
+         채운 뒤 같은 문서를 업데이트하는 방식으로 동작한다.
     ========================== -->
 
     <section class="page-heading">
@@ -252,135 +240,138 @@
 <%@ include file="/common/auth-scripts.jspf" %>
 
 <script>
-    /*
-     * 위쪽 가드 스크립트에서 guardPassed가 true일 때만
-     * targetPost / savedPosts / targetIndex가 유효하다.
-     * 리다이렉트가 걸린 경우 여기서 더 진행하지 않는다.
-     */
+    (async function initEditForm() {
 
-    if (!guardPassed) {
-        throw new Error("게시글 수정 접근 조건을 만족하지 않아 중단합니다.");
-    }
+        /*
+         * editGuardPromise는 권한 검사를 통과하면 게시글을,
+         * 아니면 null을 준다(이 경우 이미 다른 곳으로 리다이렉트 중이므로
+         * 여기서는 아무 것도 하지 않는다).
+         */
 
-    document.getElementById("writeTitle").value = targetPost.title;
-    document.getElementById("writeBody").value = targetPost.body;
+        const targetPost = await editGuardPromise;
 
-    let selectedCountry = targetPost.country;
-    let selectedCountryLabel = targetPost.countryLabel;
-    let selectedStyle = targetPost.style;
+        if (!targetPost) {
+            return;
+        }
 
-    function markActiveButton(groupId, datasetKey, value) {
+        document.getElementById("writeTitle").value = targetPost.title;
+        document.getElementById("writeBody").value = targetPost.body;
 
-        const buttons =
-            document.getElementById(groupId).querySelectorAll(".filter-button");
+        let selectedCountry = targetPost.country;
+        let selectedCountryLabel = targetPost.countryLabel;
+        let selectedStyle = targetPost.style;
 
-        buttons.forEach(function (button) {
+        function markActiveButton(groupId, datasetKey, value) {
 
-            if (button.dataset[datasetKey] === value) {
-                button.classList.add("active");
-            }
+            const buttons =
+                document.getElementById(groupId).querySelectorAll(".filter-button");
 
-        });
+            buttons.forEach(function (button) {
 
-    }
-
-    markActiveButton("writeCountryGroup", "country", selectedCountry);
-    markActiveButton("writeStyleGroup", "style", selectedStyle);
-
-    function bindWriteFilterGroup(groupId, onSelect) {
-
-        const group =
-            document.getElementById(groupId);
-
-        const buttons =
-            group.querySelectorAll(".filter-button");
-
-        buttons.forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                buttons.forEach(function (other) {
-                    other.classList.remove("active");
-                });
-
-                button.classList.add("active");
-
-                onSelect(button);
+                if (button.dataset[datasetKey] === value) {
+                    button.classList.add("active");
+                }
 
             });
 
+        }
+
+        markActiveButton("writeCountryGroup", "country", selectedCountry);
+        markActiveButton("writeStyleGroup", "style", selectedStyle);
+
+        function bindWriteFilterGroup(groupId, onSelect) {
+
+            const group =
+                document.getElementById(groupId);
+
+            const buttons =
+                group.querySelectorAll(".filter-button");
+
+            buttons.forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    buttons.forEach(function (other) {
+                        other.classList.remove("active");
+                    });
+
+                    button.classList.add("active");
+
+                    onSelect(button);
+
+                });
+
+            });
+
+        }
+
+        bindWriteFilterGroup("writeCountryGroup", function (button) {
+            selectedCountry = button.dataset.country;
+            selectedCountryLabel = button.dataset.countryLabel;
         });
 
-    }
-
-    bindWriteFilterGroup("writeCountryGroup", function (button) {
-        selectedCountry = button.dataset.country;
-        selectedCountryLabel = button.dataset.countryLabel;
-    });
-
-    bindWriteFilterGroup("writeStyleGroup", function (button) {
-        selectedStyle = button.dataset.style;
-    });
-
-
-    const editForm =
-        document.getElementById("editForm");
-
-    editForm.addEventListener("submit", function (event) {
-
-        event.preventDefault();
-
-        const title =
-            document.getElementById("writeTitle").value.trim();
-
-        const body =
-            document.getElementById("writeBody").value.trim();
-
-        if (title === "") {
-            alert("제목을 입력해 주세요.");
-            return;
-        }
-
-        if (!selectedCountry) {
-            alert("여행지 구분을 선택해 주세요.");
-            return;
-        }
-
-        if (!selectedStyle) {
-            alert("여행 성향을 선택해 주세요.");
-            return;
-        }
-
-        if (body === "") {
-            alert("본문을 입력해 주세요.");
-            return;
-        }
-
-        const DEFAULT_IMAGE_BY_COUNTRY = {
-            KR: "korea.jpg",
-            JP: "japan.jpg",
-            ETC: "world.jpg"
-        };
-
-        savedPosts[targetIndex] = Object.assign({}, targetPost, {
-            title: title,
-            body: body,
-            country: selectedCountry,
-            countryLabel: selectedCountryLabel,
-            style: selectedStyle,
-            image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
+        bindWriteFilterGroup("writeStyleGroup", function (button) {
+            selectedStyle = button.dataset.style;
         });
 
-        localStorage.setItem(
-            "trable_mock_posts",
-            JSON.stringify(savedPosts)
-        );
 
-        alert("게시글이 수정되었습니다.");
+        const editForm =
+            document.getElementById("editForm");
 
-        location.href = "<%= contextPath %>/posts.jsp";
+        editForm.addEventListener("submit", async function (event) {
 
-    });
+            event.preventDefault();
+
+            const title =
+                document.getElementById("writeTitle").value.trim();
+
+            const body =
+                document.getElementById("writeBody").value.trim();
+
+            if (title === "") {
+                alert("제목을 입력해 주세요.");
+                return;
+            }
+
+            if (!selectedCountry) {
+                alert("여행지 구분을 선택해 주세요.");
+                return;
+            }
+
+            if (!selectedStyle) {
+                alert("여행 성향을 선택해 주세요.");
+                return;
+            }
+
+            if (body === "") {
+                alert("본문을 입력해 주세요.");
+                return;
+            }
+
+            const DEFAULT_IMAGE_BY_COUNTRY = {
+                KR: "korea.jpg",
+                JP: "japan.jpg",
+                ETC: "world.jpg"
+            };
+
+            await postsStore.updatePost(targetPost.id, {
+                title: title,
+                body: body,
+                country: selectedCountry,
+                countryLabel: selectedCountryLabel,
+                style: selectedStyle,
+                image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry],
+                authorUid: targetPost.authorUid,
+                authorNickname: targetPost.authorNickname
+            });
+
+            alert("게시글이 수정되었습니다.");
+
+            location.href = "<%= contextPath %>/posts/detail.jsp?id=" + targetPost.id;
+
+        });
+
+    })();
 </script>
 
 </body>

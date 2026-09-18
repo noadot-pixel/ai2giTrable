@@ -238,75 +238,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="koreaCardList">
 
-                <!-- 실제 게시물에는 data-date를 입력 -->
-                <article class="story-card"
-                         data-date="2026-09-10">
-
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=1"
-                       class="story-image">
-
-                        <img src="<%= contextPath %>/images/jeju.jpg"
-                             alt="제주도 2박 3일 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            한국 여행지
-                        </span>
-
-                        <h3>
-                            <a href="<%= contextPath %>/posts/detail.jsp?id=1">
-                                제주도 2박 3일 힐링 여행
-                            </a>
-                        </h3>
-
-                        <p>
-                            아름다운 바다와 카페, 맛집까지
-                            알차게 다녀온 제주 여행 기록입니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>바다소년</span>
-                            <span>2026.09.10</span>
-                            <span>조회 892</span>
-                            <span>댓글 18</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <!-- 빈 카드에는 data-empty를 입력 -->
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 한국 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 한국 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 한국 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -335,73 +270,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="japanCardList">
 
-                <article class="story-card"
-                         data-date="2026-09-12">
-
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=4"
-                       class="story-image">
-
-                        <img src="<%= contextPath %>/images/fukuoka.jpg"
-                             alt="후쿠오카 3박 4일 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            일본 여행지
-                        </span>
-
-                        <h3>
-                            <a href="<%= contextPath %>/posts/detail.jsp?id=4">
-                                후쿠오카 3박 4일, 먹고 걷고 또 먹은 여행
-                            </a>
-                        </h3>
-
-                        <p>
-                            첫 일본 자유여행에서 만족했던 맛집과
-                            숙소, 교통 정보를 정리했습니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>여행좋아</span>
-                            <span>2026.09.12</span>
-                            <span>조회 1,245</span>
-                            <span>댓글 32</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 일본 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 일본 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 일본 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -430,73 +302,10 @@
 
             </div>
 
-            <div class="country-card-list">
+            <div class="country-card-list"
+                 id="worldCardList">
 
-                <article class="story-card"
-                         data-date="2026-09-08">
-
-                    <a href="<%= contextPath %>/posts/detail.jsp?id=7"
-                       class="story-image">
-
-                        <img src="<%= contextPath %>/images/barcelona.jpg"
-                             alt="스페인 바르셀로나 여행">
-                    </a>
-
-                    <div class="story-content">
-
-                        <span class="story-category">
-                            세계 여행지
-                        </span>
-
-                        <h3>
-                            <a href="<%= contextPath %>/posts/detail.jsp?id=7">
-                                처음 떠나는 유럽, 스페인 바르셀로나
-                            </a>
-                        </h3>
-
-                        <p>
-                            캄프 누에서의 열정을 느낄 수 있는
-                            바르셀로나 여행을 준비합니다.
-                        </p>
-
-                        <div class="story-information">
-                            <span>길위에서</span>
-                            <span>2026.09.08</span>
-                            <span>조회 2,103</span>
-                            <span>댓글 41</span>
-                        </div>
-
-                    </div>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 세계 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
-
-                <article class="empty-story-card"
-                         data-empty="true">
-
-                    <div class="empty-folder">
-                        📁
-                    </div>
-
-                    <p>
-                        새로운 세계 여행 이야기가<br>
-                        등록될 공간입니다.
-                    </p>
-
-                </article>
+                <!-- Firestore에서 불러온 세계 여행지 최신 게시물이 여기에 채워진다 -->
 
             </div>
 
@@ -540,6 +349,8 @@
 <%@ include file="/common/footer.jspf" %>
 
 <%@ include file="/common/auth-scripts.jspf" %>
+
+<script src="<%= contextPath %>/js/posts-store.js"></script>
 
 <script>
     /*
@@ -599,74 +410,70 @@
 
 
     /*
-     * 각 국가 게시판 게시물을 최신순으로 정렬
-     *
-     * 실제 게시물:
-     * data-date="2026-09-12"
-     *
-     * 빈 카드:
-     * data-empty="true"
+     * Firestore posts 컬렉션에서 국가별 최신 게시물을 최대 3개씩 보여준다.
+     * 모자란 칸은 빈 카드로 채운다.
      */
 
-    function sortBoardsByLatestDate() {
+    function escapeHtml(text) {
 
-        const boardLists =
-            document.querySelectorAll(
-                ".country-card-list"
-            );
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-        boardLists.forEach(function (boardList) {
+    function renderCountryBoard(containerId, countryCode, posts, emptyText) {
 
-            const cards =
-                Array.from(boardList.children);
+        const container =
+            document.getElementById(containerId);
 
-            cards.sort(function (firstCard, secondCard) {
+        const countryPosts =
+            posts.filter(function (post) {
+                return post.country === countryCode;
+            }).slice(0, 3);
 
-                const firstIsEmpty =
-                    firstCard.dataset.empty === "true";
+        container.innerHTML = countryPosts.map(function (post) {
 
-                const secondIsEmpty =
-                    secondCard.dataset.empty === "true";
+            const detailUrl =
+                "<%= contextPath %>/posts/detail.jsp?id=" + post.id;
 
-                /*
-                 * 빈 카드는 무조건 뒤로 이동
-                 */
+            return '<article class="story-card">'
+                + '<a href="' + detailUrl + '" class="story-image">'
+                + '<img src="<%= contextPath %>/images/' + post.image + '" alt="'
+                + escapeHtml(post.title) + '"></a>'
+                + '<div class="story-content">'
+                + '<span class="story-category">' + escapeHtml(post.countryLabel) + '</span>'
+                + '<h3><a href="' + detailUrl + '">' + escapeHtml(post.title) + '</a></h3>'
+                + '<p>' + escapeHtml(post.body) + '</p>'
+                + '<div class="story-information">'
+                + '<span>' + escapeHtml(post.authorNickname) + '</span>'
+                + '<span>' + (post.createdAt ? post.createdAt.slice(0, 10).replace(/-/g, ".") : "") + '</span>'
+                + '<span>조회 ' + (post.views || 0) + '</span>'
+                + '<span>댓글 ' + (post.comments || 0) + '</span>'
+                + '</div></div></article>';
 
-                if (firstIsEmpty && !secondIsEmpty) {
-                    return 1;
-                }
+        }).join("");
 
-                if (!firstIsEmpty && secondIsEmpty) {
-                    return -1;
-                }
+        for (let i = countryPosts.length; i < 3; i++) {
 
-                if (firstIsEmpty && secondIsEmpty) {
-                    return 0;
-                }
+            container.innerHTML +=
+                '<article class="empty-story-card" data-empty="true">'
+                + '<div class="empty-folder">📁</div>'
+                + '<p>' + emptyText + '</p>'
+                + '</article>';
 
-                /*
-                 * 최신 날짜가 앞으로 오도록 정렬
-                 */
-
-                const firstDate =
-                    new Date(firstCard.dataset.date);
-
-                const secondDate =
-                    new Date(secondCard.dataset.date);
-
-                return secondDate - firstDate;
-
-            });
-
-            cards.forEach(function (card) {
-                boardList.appendChild(card);
-            });
-
-        });
+        }
 
     }
 
-    sortBoardsByLatestDate();
+    (async function loadHomeStories() {
+
+        const posts = await postsStore.getAllPosts();
+
+        renderCountryBoard("koreaCardList", "KR", posts, "새로운 한국 여행 이야기가<br>등록될 공간입니다.");
+        renderCountryBoard("japanCardList", "JP", posts, "새로운 일본 여행 이야기가<br>등록될 공간입니다.");
+        renderCountryBoard("worldCardList", "ETC", posts, "새로운 세계 여행 이야기가<br>등록될 공간입니다.");
+
+    })();
 </script>
 
 </body>

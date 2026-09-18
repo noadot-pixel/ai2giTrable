@@ -39,22 +39,34 @@
 
 
     /*
-     * 관리자 판별도 실제 DB 없이 이메일 목록으로 대신한다.
-     * 추후 Firestore/Oracle의 admin 테이블(또는 컬럼)로 교체될 예정.
-     * 테스트하려면 이 목록에 본인의 Firebase 테스트 계정 이메일을 추가한다.
+     * 관리자 판별은 Firestore의 admins/{uid} 문서 존재 여부로 확인한다.
+     * 콘솔의 Firestore Database에서 admins 컬렉션에 해당 계정의 uid로
+     * 문서를 하나 만들어 두면 그 계정은 관리자가 된다(보안 규칙상
+     * 클라이언트에서는 admins 문서를 쓸 수 없고 콘솔에서만 추가 가능).
+     * firebase-init.jspf가 먼저 로드되어 있어야 한다.
      */
 
-    const ADMIN_EMAILS = [
-        "admin@trable.com"
-    ];
-
-    function isAdmin() {
+    async function isAdmin() {
 
         const user = getCurrentUser();
 
-        return !!user
-            && !!user.email
-            && ADMIN_EMAILS.indexOf(user.email) !== -1;
+        if (!user || !user.id) {
+            return false;
+        }
+
+        try {
+
+            const doc = await firebase.firestore()
+                .collection("admins")
+                .doc(user.id)
+                .get();
+
+            return doc.exists;
+
+        } catch (error) {
+            return false;
+        }
+
     }
 
     global.mockAuth = {

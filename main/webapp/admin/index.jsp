@@ -26,27 +26,37 @@
 
 <body>
 
+<%@ include file="/common/firebase-init.jspf" %>
+
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
 
 <script>
     /*
-     * 관리자 전용 화면. 로그인 여부 + 관리자 계정 여부를 모두 확인한다.
-     * 관리자 판별은 mockAuth.isAdmin()의 이메일 목록으로 대신하는 목업이며,
-     * 실제로는 서버에서 세션의 권한을 검사해야 한다.
+     * 관리자 전용 화면. 로그인 여부 + Firestore admins/{uid} 문서 존재 여부를
+     * 모두 확인한다. 실제로는 서버에서도 세션의 권한을 검사해야 한다.
      */
 
-    if (!mockAuth.isLoggedIn()) {
+    (async function guardAdminAccess() {
 
-        alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
+        if (!mockAuth.isLoggedIn()) {
 
-        location.href = "<%= contextPath %>/auth/login.jsp";
+            alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
 
-    } else if (!mockAuth.isAdmin()) {
+            location.href = "<%= contextPath %>/auth/login.jsp";
 
-        alert("관리자 권한이 없습니다.");
+            return;
+        }
 
-        location.href = "<%= contextPath %>/index.jsp";
-    }
+        const isAdmin = await mockAuth.isAdmin();
+
+        if (!isAdmin) {
+
+            alert("관리자 권한이 없습니다.");
+
+            location.href = "<%= contextPath %>/index.jsp";
+        }
+
+    })();
 </script>
 
 <% String activeNav = ""; %>
@@ -95,11 +105,49 @@
 
     </section>
 
+    <!-- =========================
+         예시 게시글 시드
+         posts 컬렉션이 비어 있을 때만 9개의 예시 게시글을 채워 넣는다.
+         이미 데이터가 있으면 아무 것도 하지 않는다.
+    ========================== -->
+
+    <section class="admin-seed-section">
+
+        <p class="admin-seed-description">
+            게시판이 비어 있을 때 예시 게시글 9개를 한 번에 채워 넣습니다.
+            이미 게시글이 있으면 아무 것도 바뀌지 않습니다.
+        </p>
+
+        <button type="button"
+                id="seedButton"
+                class="auth-submit admin-seed-button">
+            예시 게시글 시드 추가
+        </button>
+
+    </section>
+
 </main>
 
 <%@ include file="/common/footer.jspf" %>
 
 <%@ include file="/common/auth-scripts.jspf" %>
+
+<script src="<%= contextPath %>/js/posts-store.js"></script>
+
+<script>
+    document.getElementById("seedButton")
+        .addEventListener("click", async function () {
+
+            const addedCount = await postsStore.seedIfEmpty();
+
+            if (addedCount === 0) {
+                alert("이미 게시글이 있어서 시드를 추가하지 않았습니다.");
+            } else {
+                alert(addedCount + "개의 예시 게시글을 추가했습니다.");
+            }
+
+        });
+</script>
 
 </body>
 </html>

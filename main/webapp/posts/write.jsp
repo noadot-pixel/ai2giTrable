@@ -57,7 +57,7 @@
 
     <!-- =========================
          게시글 작성
-         실제 저장소는 없고 이 브라우저의 localStorage에만 저장되는 목업이다.
+         Firestore posts 컬렉션에 문서를 추가한다(모든 방문자에게 공개).
          여행지 구분(국내/일본/해외) + 여행 성향(힐링/맛집/액티비티/쇼핑)을
          각각 하나씩 골라 두 축으로 태그를 붙인다.
     ========================== -->
@@ -195,6 +195,8 @@
 
 <%@ include file="/common/auth-scripts.jspf" %>
 
+<script src="<%= contextPath %>/js/posts-store.js"></script>
+
 <script>
     /*
      * 여행지 구분 / 여행 성향은 각 그룹에서 하나만 선택되도록 처리
@@ -250,29 +252,10 @@
         ETC: "world.jpg"
     };
 
-    function formatDisplayDate(date) {
-
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-
-        return yyyy + "." + mm + "." + dd;
-    }
-
-    function formatDataDate(date) {
-
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-
-        return yyyy + "-" + mm + "-" + dd;
-    }
-
-
     const writeForm =
         document.getElementById("writeForm");
 
-    writeForm.addEventListener("submit", function (event) {
+    writeForm.addEventListener("submit", async function (event) {
 
         event.preventDefault();
 
@@ -305,34 +288,20 @@
         const currentUser =
             mockAuth.getCurrentUser();
 
-        const now = new Date();
-
-        const newPost = {
-            id: "local-" + now.getTime(),
+        const newPostId = await postsStore.createPost({
             title: title,
             body: body,
             country: selectedCountry,
             countryLabel: selectedCountryLabel,
             style: selectedStyle,
-            author: currentUser.nickname,
-            displayDate: formatDisplayDate(now),
-            dataDate: formatDataDate(now),
+            authorUid: currentUser.id,
+            authorNickname: currentUser.nickname,
             image: DEFAULT_IMAGE_BY_COUNTRY[selectedCountry]
-        };
-
-        const savedPosts =
-            JSON.parse(localStorage.getItem("trable_mock_posts") || "[]");
-
-        savedPosts.unshift(newPost);
-
-        localStorage.setItem(
-            "trable_mock_posts",
-            JSON.stringify(savedPosts)
-        );
+        });
 
         alert("게시글이 등록되었습니다.");
 
-        location.href = "<%= contextPath %>/posts.jsp";
+        location.href = "<%= contextPath %>/posts/detail.jsp?id=" + newPostId;
 
     });
 </script>

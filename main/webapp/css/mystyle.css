@@ -1167,6 +1167,7 @@
     color: var(--text-color);
     font-size: 15px;
     line-height: 1.9;
+    white-space: pre-wrap;
 }
 
 .detail-body p + p {
@@ -1485,5 +1486,25 @@
 .admin-log-delete {
     color: #d64545;
     background-color: #fdeaea;
+}
+
+.admin-seed-section {
+    max-width: 900px;
+    margin: 0 auto 80px;
+    padding: 20px 24px;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+}
+
+.admin-seed-description {
+    margin-bottom: 12px;
+    color: var(--gray-color);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.admin-seed-button {
+    width: auto;
+    padding: 10px 20px;
 }
 

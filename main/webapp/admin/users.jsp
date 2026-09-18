@@ -26,21 +26,32 @@
 
 <body>
 
+<%@ include file="/common/firebase-init.jspf" %>
+
 <script src="<%= contextPath %>/js/mock-auth.js"></script>
 
 <script>
-    if (!mockAuth.isLoggedIn()) {
+    (async function guardAdminAccess() {
 
-        alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
+        if (!mockAuth.isLoggedIn()) {
 
-        location.href = "<%= contextPath %>/auth/login.jsp";
+            alert("관리자 전용 화면입니다. 로그인 후 이용해 주세요.");
 
-    } else if (!mockAuth.isAdmin()) {
+            location.href = "<%= contextPath %>/auth/login.jsp";
 
-        alert("관리자 권한이 없습니다.");
+            return;
+        }
 
-        location.href = "<%= contextPath %>/index.jsp";
-    }
+        const isAdmin = await mockAuth.isAdmin();
+
+        if (!isAdmin) {
+
+            alert("관리자 권한이 없습니다.");
+
+            location.href = "<%= contextPath %>/index.jsp";
+        }
+
+    })();
 </script>
 
 <% String activeNav = ""; %>
@@ -50,7 +61,7 @@
 
     <!-- =========================
          회원 관리
-         실제 회원 DB는 없고, 화면 확인용 하드코딩된 목록이다.
+         Firestore의 users 컬렉션(회원가입 시 기록됨)을 그대로 보여준다.
          검색은 닉네임/이메일 기준 클라이언트 필터링만 동작한다.
          이용 정지·탈퇴 처리 권한은 기획서상 미확정이라 조회만 제공한다.
     ========================== -->
@@ -137,22 +148,6 @@
 <%@ include file="/common/auth-scripts.jspf" %>
 
 <script>
-    /*
-     * 실제로는 DB에서 회원 목록을 조회해야 하지만
-     * 지금은 화면 확인용 하드코딩 데이터를 사용한다.
-     */
-
-    const MOCK_USERS = [
-        { nickname: "바다소년", email: "sea_boy@example.com", joinedDate: "2026-06-02", status: "활성" },
-        { nickname: "먹부림", email: "foodlover@example.com", joinedDate: "2026-06-15", status: "활성" },
-        { nickname: "주말러", email: "weekender@example.com", joinedDate: "2026-07-01", status: "활성" },
-        { nickname: "여행좋아", email: "travelfan@example.com", joinedDate: "2026-07-10", status: "활성" },
-        { nickname: "쇼퍼홀릭", email: "shopaholic@example.com", joinedDate: "2026-07-22", status: "정지" },
-        { nickname: "디즈니덕후", email: "disneyfan@example.com", joinedDate: "2026-08-01", status: "활성" },
-        { nickname: "길위에서", email: "onthe_road@example.com", joinedDate: "2026-08-09", status: "활성" },
-        { nickname: "파리지앵", email: "parisian@example.com", joinedDate: "2026-08-30", status: "활성" }
-    ];
-
     const userTableBody =
         document.getElementById("userTableBody");
 
@@ -192,7 +187,20 @@
 
     }
 
-    renderUserTable(MOCK_USERS);
+    let allUsers = [];
+
+    async function loadUsers() {
+
+        const snapshot = await firebase.firestore().collection("users").get();
+
+        allUsers = snapshot.docs.map(function (doc) {
+            return doc.data();
+        });
+
+        renderUserTable(allUsers);
+    }
+
+    loadUsers();
 
 
     const userSearchForm =
@@ -209,11 +217,11 @@
             userSearchKeyword.value.trim().toLowerCase();
 
         if (keyword === "") {
-            renderUserTable(MOCK_USERS);
+            renderUserTable(allUsers);
             return;
         }
 
-        const filtered = MOCK_USERS.filter(function (user) {
+        const filtered = allUsers.filter(function (user) {
 
             return user.nickname.toLowerCase().indexOf(keyword) !== -1
                 || user.email.toLowerCase().indexOf(keyword) !== -1;
