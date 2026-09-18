@@ -577,3 +577,286 @@
     color: #7d8794;
     font-size: 12px;
 }
+
+/* =========================
+   공통 페이지 타이틀
+========================= */
+
+.page-heading {
+    max-width: 1180px;
+    margin: 50px auto 30px;
+    padding: 0 24px;
+}
+
+.breadcrumb {
+    margin-bottom: 10px;
+    color: var(--gray-color);
+    font-size: 13px;
+}
+
+.breadcrumb a {
+    color: var(--gray-color);
+}
+
+.breadcrumb a:hover {
+    color: var(--blue);
+}
+
+.page-heading h1 {
+    color: var(--navy);
+    font-size: 28px;
+}
+
+.page-description {
+    margin-top: 8px;
+    color: var(--gray-color);
+    font-size: 14px;
+}
+
+/* =========================
+   검색 및 필터 (posts.jsp)
+========================= */
+
+.filter-section {
+    max-width: 1180px;
+    margin: 0 auto 40px;
+    padding: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background-color: white;
+
+    box-shadow:
+        0 6px 18px rgba(25, 50, 80, 0.06);
+}
+
+.filter-section .search-form {
+    width: 100%;
+    margin: 0 0 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.filter-label {
+    margin-right: 4px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.filter-button {
+    padding: 8px 16px;
+    color: var(--gray-color);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.filter-button.active {
+    color: white;
+    border-color: var(--blue);
+    background-color: var(--blue);
+}
+
+/* =========================
+   목록 헤더 (결과 수 / 정렬)
+========================= */
+
+.list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto 20px;
+    padding: 0 24px;
+}
+
+.list-heading p {
+    color: var(--gray-color);
+    font-size: 14px;
+}
+
+.list-heading strong {
+    color: var(--navy);
+}
+
+.sort-group {
+    display: flex;
+    gap: 8px;
+}
+
+.sort-button {
+    padding: 6px 14px;
+    color: var(--gray-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background-color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.sort-button.active {
+    color: var(--blue);
+    border-color: var(--blue);
+    background-color: var(--light-blue);
+}
+
+/* =========================
+   게시글 목록 (posts.jsp)
+========================= */
+
+.post-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.empty-result {
+    max-width: 1180px;
+    margin: 40px auto;
+    padding: 0 24px;
+    color: var(--gray-color);
+    font-size: 14px;
+    text-align: center;
+}
+
+/* =========================
+   페이지네이션
+========================= */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    max-width: 1180px;
+    margin: 40px auto 80px;
+    padding: 0 24px;
+}
+
+.page-button {
+    width: 36px;
+    height: 36px;
+    color: var(--gray-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background-color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.page-button:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.page-button.active {
+    color: white;
+    border-color: var(--blue);
+    background-color: var(--blue);
+}
+
+/* =========================
+   로그인 / 회원가입 (auth)
+========================= */
+
+.auth-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 60px 24px;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    background-color: white;
+    box-shadow: var(--shadow);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.auth-box h1 {
+    color: var(--navy);
+    font-size: 24px;
+}
+
+.auth-description {
+    margin-top: 8px;
+    margin-bottom: 26px;
+    color: var(--gray-color);
+    font-size: 14px;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--light-blue);
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.auth-box input:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.auth-box button[type="submit"] {
+    margin-top: 8px;
+    padding: 14px 16px;
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    background-color: var(--blue);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-box button[type="submit"]:hover {
+    background-color: #245fbf;
+}
+
+.auth-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    color: var(--gray-color);
+    font-size: 13px;
+}
+
+.auth-links a:hover {
+    color: var(--blue);
+}
+
+.member-nickname {
+    color: var(--navy);
+    font-weight: 700;
+}
