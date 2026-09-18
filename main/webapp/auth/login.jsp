@@ -174,14 +174,6 @@
         "auth/too-many-requests": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요."
     };
 
-    console.log("[DEBUG] firebase.apps.length =", firebase.apps.length);
-    console.log("[DEBUG] firebase.apps =", firebase.apps.map(function (a) { return a.options.apiKey; }));
-    console.log("[DEBUG] before login, firebase.auth().currentUser =", firebase.auth().currentUser);
-
-    firebase.auth().onAuthStateChanged(function (user) {
-        console.log("[DEBUG] onAuthStateChanged fired, user =", user);
-    });
-
     loginForm.addEventListener("submit", function (event) {
 
         event.preventDefault();
@@ -199,22 +191,10 @@
             return;
         }
 
-        console.log("[DEBUG] calling signInWithEmailAndPassword...");
-
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .then(function () {
-
-                console.log("[DEBUG] persistence set to LOCAL, signing in...");
-
-                return firebase.auth().signInWithEmailAndPassword(loginEmail, loginPassword);
-
-            })
+        firebase.auth().signInWithEmailAndPassword(loginEmail, loginPassword)
             .then(function (userCredential) {
 
                 const firebaseUser = userCredential.user;
-
-                console.log("[DEBUG] sign-in resolved, userCredential.user =", firebaseUser);
-                console.log("[DEBUG] immediately after, firebase.auth().currentUser =", firebase.auth().currentUser);
 
                 mockAuth.login({
                     id: firebaseUser.uid,
@@ -222,21 +202,10 @@
                     nickname: firebaseUser.displayName || firebaseUser.email.split("@")[0]
                 });
 
-                /*
-                 * Firebase Auth가 로그인 세션을 브라우저에 완전히 기록하기 전에
-                 * 바로 다른 페이지로 넘어가면 세션 복원이 안 되는 경우가 있어
-                 * 아주 짧게 기다렸다가 이동한다.
-                 */
-
-                setTimeout(function () {
-                    console.log("[DEBUG] right before redirect, firebase.auth().currentUser =", firebase.auth().currentUser);
-                    location.href = "<%= contextPath %>/index.jsp";
-                }, 500);
+                location.href = "<%= contextPath %>/index.jsp";
 
             })
             .catch(function (error) {
-
-                console.log("[DEBUG] sign-in rejected:", error);
 
                 const message =
                     LOGIN_ERROR_MESSAGES[error.code]

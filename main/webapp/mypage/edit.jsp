@@ -490,32 +490,33 @@
         };
 
         /*
+         * Firestore/Storage 보안 규칙은 mockAuth(localStorage)가 아니라
+         * 실제 Firebase 인증 상태를 검사한다. Firebase는 저장된 세션을
+         * 비동기로 복원하므로 복원이 끝날 때까지 기다린 뒤 확인한다.
+         * 둘이 어긋나 있으면(예: 브라우저의 로그인 세션이 끊긴 경우)
+         * 경로의 uid와 실제 인증된 uid가 달라 거부된다.
+         */
+
+        const firebaseUser = await window.authReady;
+
+        if (!firebaseUser || firebaseUser.uid !== currentUser.id) {
+
+            alert(
+                "로그인 세션이 만료되어 저장할 수 없습니다. "
+                + "다시 로그인한 뒤 시도해 주세요."
+            );
+
+            location.href = "<%= contextPath %>/auth/login.jsp";
+
+            return;
+        }
+
+        /*
          * 새 이미지를 골랐을 때만 업로드한다.
          * Firebase Storage가 콘솔에서 활성화돼 있어야 동작한다.
          */
 
         if (selectedPhotoFile) {
-
-            /*
-             * Storage 보안 규칙은 mockAuth(localStorage)가 아니라
-             * 실제 Firebase 인증 상태(firebase.auth().currentUser)를 검사한다.
-             * 둘이 어긋나 있으면(예: 브라우저의 로그인 세션이 끊긴 경우)
-             * 업로드 경로의 uid와 실제 인증된 uid가 달라 거부된다.
-             */
-
-            const firebaseUser = firebase.auth().currentUser;
-
-            if (!firebaseUser || firebaseUser.uid !== currentUser.id) {
-
-                alert(
-                    "로그인 세션이 만료되어 이미지를 업로드할 수 없습니다. "
-                    + "다시 로그인한 뒤 시도해 주세요."
-                );
-
-                location.href = "<%= contextPath %>/auth/login.jsp";
-
-                return;
-            }
 
             try {
 

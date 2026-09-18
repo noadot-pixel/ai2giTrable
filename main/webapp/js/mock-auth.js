@@ -56,6 +56,13 @@
 
         try {
 
+            /*
+             * admins/{uid}는 규칙상 로그인한 본인만 읽을 수 있으므로
+             * Firebase 세션 복원이 끝난 뒤에 조회해야 한다.
+             */
+
+            await window.authReady;
+
             const doc = await firebase.firestore()
                 .collection("admins")
                 .doc(user.id)

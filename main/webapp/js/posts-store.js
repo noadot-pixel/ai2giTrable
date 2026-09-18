@@ -38,7 +38,23 @@
         return Object.assign({ id: doc.id }, doc.data());
     }
 
+    /*
+     * 쓰기 작업은 보안 규칙이 로그인 여부를 검사하므로
+     * Firebase 세션 복원(authReady)이 끝난 뒤에 실행해야 한다.
+     */
+
+    async function ensureSignedIn() {
+
+        const user = await window.authReady;
+
+        if (!user) {
+            throw new Error("로그인 세션이 없습니다. 다시 로그인해 주세요.");
+        }
+    }
+
     async function createPost(data) {
+
+        await ensureSignedIn();
 
         const post = Object.assign({
             createdAt: new Date().toISOString(),
@@ -61,6 +77,8 @@
 
     async function updatePost(id, data, actorUid, actorNickname) {
 
+        await ensureSignedIn();
+
         await db().collection("posts").doc(id).update(data);
 
         await addLog({
@@ -73,6 +91,8 @@
     }
 
     async function deletePost(id, postTitle, actorUid, actorNickname) {
+
+        await ensureSignedIn();
 
         await db().collection("posts").doc(id).delete();
 
@@ -95,6 +115,12 @@
     }
 
     async function getAllLogs() {
+
+        /*
+         * postLogs는 관리자만 읽을 수 있으므로 세션 복원 후에 조회한다.
+         */
+
+        await window.authReady;
 
         const snapshot = await db().collection("postLogs").get();
 
@@ -129,6 +155,8 @@
     ];
 
     async function seedIfEmpty() {
+
+        await ensureSignedIn();
 
         const snapshot = await db().collection("posts").limit(1).get();
 

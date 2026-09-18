@@ -3,7 +3,18 @@
     Firebase 앱 초기화 (Authentication + Firestore 공용, compat 빌드).
     이 조각을 먼저 include한 뒤에는 전역 firebase 객체를 그대로 쓰면 된다.
     예: firebase.auth(), firebase.firestore()
+
+    한 페이지에서 여러 번 include돼도 SDK는 한 번만 로드한다.
+    (SDK를 두 번 로드하면 전역 firebase 객체가 새로 만들어져 초기화/인증 상태를 잃는다.)
+
+    authReady:
+    Firebase Auth는 저장된 로그인 세션을 비동기로 복원하기 때문에, 페이지 로드 직후에는
+    firebase.auth().currentUser가 잠깐 null이다. 로그인이 필요한 Firestore/Storage 작업은
+    "await authReady" 로 복원이 끝난 뒤에 실행해야 한다. (결과값: 로그인 유저 또는 null)
 --%>
+
+<% if (request.getAttribute("firebaseInitIncluded") == null) {
+       request.setAttribute("firebaseInitIncluded", Boolean.TRUE); %>
 
 <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
@@ -23,4 +34,26 @@
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
+
+    const authReadyStartedAt = performance.now();
+
+    window.authReady = new Promise(function (resolve) {
+
+        const unsubscribe = firebase.auth().onAuthStateChanged(function (user) {
+
+            unsubscribe();
+
+            console.log(
+                "[authReady] 세션 복원 완료 ("
+                + Math.round(performance.now() - authReadyStartedAt) + "ms), user ="
+                + (user ? " " + user.uid : " null")
+            );
+
+            resolve(user);
+
+        });
+
+    });
 </script>
+
+<% } %>

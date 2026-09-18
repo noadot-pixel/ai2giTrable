@@ -28,7 +28,14 @@
 - Tomcat의 `webapps\trable` 폴더는 `main/webapp`을 가리키는 **정션(junction)**으로 연결돼 있음 → 파일 수정 시 재배포 없이 바로 반영됨. 단, **`web.xml` 수정은 Tomcat 재시작이 필요함** (JSP는 자동 반영, web.xml은 컨텍스트 로드 시점에만 읽음).
 - 접속 주소: `http://localhost:8081/trable/index.jsp`
 
-### 본체 PC에서 처음 할 일 (환경 구성)
+### 본체 PC 현재 상태 (2026-09-19 구성 완료)
+- 프로젝트 경로: `C:\AI2GI\ai2giTrable` (노트북 경로와 다름)
+- Tomcat 10.1.59: `C:\apache-tomcat-10.1.59`, HTTP 8081 / 종료 8006, `webapps\trable` → `C:\AI2GI\ai2giTrable\main\webapp` 정션 연결됨
+- JDK 17(`C:\Program Files\Java\jdk-17`)과 JDK 25가 함께 설치돼 있고 기본 `java`는 25 → Tomcat 실행 시 `JAVA_HOME`을 JDK 17로 지정해서 띄울 것
+- VS Code Java 확장 팩(`vscjava.vscode-java-pack` 등)은 설치돼 있음
+- **노트북은 더 이상 작업에 쓰지 않음.** 본체에서만 작업.
+
+### (참고) 본체 PC에서 처음 할 일 (환경 구성) — 위 항목은 이미 완료됨
 ```powershell
 # 1) JDK 확인/설치 (없으면)
 winget install --id Git.Git -e --source winget   # git은 이미 있다고 하셨으니 생략 가능
@@ -226,34 +233,22 @@ service firebase.storage {
 - `posts-store.js`: Firestore `posts`/`postLogs` CRUD 공용 함수 (`getAllPosts`, `getPostById`, `createPost`, `updatePost`, `deletePost`, `getAllLogs`, `seedIfEmpty`). 나중에 Oracle로 옮길 때 이 파일만 서버 API 호출로 바꾸면 되도록 설계함.
 - `author-info.js`: 게시글 카드/상세에 작성자의 자기소개·국가를 **항상 바로 보이게**(호버 아님) 렌더링. `.author-info` 요소에 `data-author-uid`를 채워두면 알아서 채워짐.
 
-## 10. ⚠️ 미해결 문제 (가장 중요, 본체 PC에서 최우선 확인)
+## 10. ✅ 해결됨: "다른 페이지로 이동하면 Firebase 로그인이 풀리는" 문제 (2026-09-19)
 
-**증상**: 로그인은 성공하는데(같은 페이지 안에서는 `firebase.auth().currentUser`가 정상적으로 채워짐), **다른 페이지로 이동하면 `firebase.auth().currentUser`가 `null`로 리셋됨.** 그 결과 로그인이 필요한 Firestore/Storage **쓰기** 작업(프로필 저장, 이미지 업로드, 게시글 작성 등)이 "Missing or insufficient permissions" 에러로 실패함. (읽기는 대부분 공개 규칙이라 영향 없음 — 그래서 화면 자체는 멀쩡해 보이는 게 더 헷갈렸음.)
+**증상**: 로그인은 성공하는데 다른 페이지에서 로그인이 필요한 Firestore/Storage **쓰기**(프로필 저장, 이미지 업로드, 게시글 작성 등)가 "Missing or insufficient permissions"로 실패하고, `firebase.auth().currentUser`가 `null`로 보임. (읽기는 대부분 공개 규칙이라 화면은 멀쩡해 보였음. `mockAuth`(localStorage)가 헤더에 닉네임을 잘 보여줘서 "로그인된 줄" 착각하기 쉬웠음.)
 
-**확인된 사실**:
-- `mockAuth`(localStorage)는 정상적으로 로그인 상태를 유지함 — 헤더에 닉네임 잘 뜸. 이것 때문에 "로그인된 줄" 착각하기 쉬움.
-- 로그인 세션 데이터 자체는 브라우저에 저장은 됨 (DevTools → Application → IndexedDB → `firebaseLocalStorage`에 `firebase:authUser:...` 키 존재 확인함). **"저장이 안 됨"이 아니라 "저장된 걸 복원을 못 함"이 문제.**
-- 콘솔에 Firestore WebChannel(`Listen` 스트림) 관련 404/400 에러, 그리고 브라우저 확장 프로그램발 "message channel closed" 에러가 같이 나타남 — 네트워크/브라우저 환경이 구글 API 트래픽을 건드리고 있는 것으로 의심됨.
-- 노트북에 **안랩 세이프트랜잭션(AhnLab Safe Transaction, `ASDSvc` 서비스로 실행 중)**이 깔려있는 걸 확인함. 유해사이트차단/위협행위차단 체크박스를 꺼봤지만 문제 지속됨 (완전 종료까지는 아직 테스트 못 함).
-- 시스템 프록시, hosts 파일, 루트 인증서(TLS 가로채기 흔적)는 확인해봤는데 이상 없었음 — 안랩이 원인이라면 프록시/인증서 방식이 아니라 커널 레벨 패킷 필터 방식일 가능성.
+**원인**: 안랩/노트북 환경 문제가 아니라 **타이밍 문제**였음. Firebase Auth는 저장된 세션(IndexedDB)을 **비동기로 복원**하기 때문에, 페이지 로드 직후에는 `currentUser`가 잠깐 `null`임. 코드가 복원이 끝나기 전에 `currentUser`를 동기로 읽거나 쓰기를 시작해서 실패한 것. 본체 PC에서도 똑같이 재현되어 환경 문제가 아님을 확인함. (`mypage.jsp` 콘솔에서 `onAuthStateChanged`로 기다린 뒤에는 Firebase uid와 mockAuth id가 일치했고 쓰기도 성공함.)
 
-**시도했지만 효과 없었던 것**:
-1. `firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)` 명시적으로 설정
-2. 로그인 성공 후 리다이렉트 전 500ms 지연 추가
-3. 안랩 체크박스(유해 사이트 차단/위협 행위 차단) 끄기
-4. 광고 차단기 끄기 (다른 무관한 콘솔 에러 하나는 없어졌지만 핵심 문제는 그대로)
-5. 사이트 데이터 완전 삭제 후 재로그인
+**해결 (구현 완료)**:
+- `common/firebase-init.jspf`: 전역 `window.authReady`(세션 복원 완료 시 유저 또는 `null`로 resolve되는 Promise)를 추가. 복원에 걸린 시간을 콘솔에 `[authReady] …ms`로 출력. 이 조각이 한 페이지에 여러 번 include돼도 SDK를 한 번만 로드하도록 가드(전에는 `admin/*.jsp`, `posts/edit.jsp`에서 SDK가 중복 로드돼 전역 `firebase` 객체가 덮어써짐).
+- `js/posts-store.js`: `createPost/updatePost/deletePost/seedIfEmpty`는 `ensureSignedIn()`(= `await authReady`)을 먼저 수행. `getAllLogs`도 복원 후 조회.
+- `js/mock-auth.js`: `isAdmin()`이 `admins/{uid}`(로그인 본인만 읽기 가능)를 읽기 전에 `await authReady`.
+- `mypage/edit.jsp`: 저장 시 `firebase.auth().currentUser` 동기 검사를 `await authReady`로 교체. 이미지 없이 저장할 때도 세션을 확인.
+- `auth/login.jsp`: 디버그 로그, 효과 없던 500ms 지연, `setPersistence` 호출 제거.
 
-**본체 PC에서 먼저 해볼 것**:
-1. (환경이 다르니) 로그인 → 다른 페이지 이동 → 콘솔에 `firebase.auth().currentUser` 확인 — 본체에서는 정상일 수도 있음. 정상이면 노트북 환경(안랩 등) 문제로 확정.
-2. 그래도 재현되면: 코드 문제이므로 아래 "차선책"으로 전환.
+**앞으로의 규칙**: 로그인 상태가 필요한 Firebase 호출(쓰기, `admins`/`postLogs` 읽기, Storage 업로드)은 **반드시 `await window.authReady` 뒤에** 실행할 것. `firebase.auth().currentUser`를 페이지 로드 직후 동기로 읽지 말 것.
 
-**막혀도 진행 가능한 차선책 (코드 레벨 우회, 아직 구현 안 함)**:
-- Firebase Auth SDK의 자동 세션 복원에 의존하지 말고, 로그인 성공 시 **ID 토큰/리프레시 토큰을 직접 localStorage에 저장**해두고
-- Firestore/Storage 쓰기 작업을 SDK 호출(`firebase.firestore().collection(...).set()` 등) 대신 **REST API를 직접 호출**(`Authorization: Bearer <토큰>` 헤더 수동 첨부)하는 방식으로 바꾸기
-- REST API로 인증 붙여서 읽기/쓰기 되는 것은 이 대화에서 PowerShell로 이미 검증 완료함 (로그인 → Firestore 문서 읽기/쓰기/삭제, Storage 업로드/다운로드 전부 성공했었음)
-- 손봐야 할 파일: `posts-store.js`(전체 REST화), `mock-auth.js`의 `isAdmin()`, `mypage/edit.jsp`의 저장 로직, `posts/write.jsp`·`posts/edit.jsp`·`posts/detail.jsp`의 쓰기 부분
-- 디버깅용으로 `auth/login.jsp`에 `console.log("[DEBUG] ...")` 라인들을 임시로 넣어놨음 — 원인 확정되면 지워야 함
+**참고**: 콘솔의 "A listener indicated an asynchronous response by returning true, but the message channel closed…"는 브라우저 확장 프로그램이 내는 에러라 Firebase와 무관함(무시).
 
 ## 11. 최근에 정리한 것들 (참고)
 
