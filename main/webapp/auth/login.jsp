@@ -120,7 +120,7 @@
                     </div>
 
                     <div class="auth-links">
-                        <a href="#">회원가입</a>
+                        <a href="<%= contextPath %>/auth/signup.jsp">회원가입</a>
                         <span aria-hidden="true"></span>
                         <a href="<%= contextPath %>/index.jsp">메인으로 돌아가기</a>
                     </div>

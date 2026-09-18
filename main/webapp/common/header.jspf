@@ -60,7 +60,7 @@
                     로그인
                 </a>
 
-                <a href="#"
+                <a href="<%= contextPath %>/auth/signup.jsp"
                    class="join-button">
                     회원가입
                 </a>
