@@ -70,9 +70,10 @@
 
         </nav>
 
-        <div class="member-menu">
+        <div class="member-menu"
+             id="memberMenu">
 
-            <a href="#">
+            <a href="<%= contextPath %>/auth/login.jsp">
                 로그인
             </a>
 
@@ -707,7 +708,46 @@
 
 </footer>
 
+<script src="<%= contextPath %>/js/mock-auth.js"></script>
+
 <script>
+    /*
+     * 로그인 상태에 따라 헤더 계정 메뉴를 바꿔 표시
+     * (localStorage 기반 목업 로그인)
+     */
+
+    (function renderMemberMenu() {
+
+        const memberMenu =
+            document.getElementById("memberMenu");
+
+        const currentUser =
+            mockAuth.getCurrentUser();
+
+        if (!currentUser) {
+            return;
+        }
+
+        memberMenu.innerHTML =
+            '<span class="member-nickname">'
+            + currentUser.nickname
+            + '님</span>'
+            + '<a href="#" id="logoutLink">로그아웃</a>';
+
+        document.getElementById("logoutLink")
+            .addEventListener("click", function (event) {
+
+                event.preventDefault();
+
+                mockAuth.logout();
+
+                location.reload();
+
+            });
+
+    })();
+
+
     const postList =
         document.getElementById("postList");
 
