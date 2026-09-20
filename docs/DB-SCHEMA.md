@@ -5,6 +5,8 @@
 현재는 Firebase(Firestore)를 임시 백엔드로 쓰고 있고, 최종 목표는 Java + JSP + Oracle이다.
 이 문서는 (1) 지금 Firestore에 실제로 있는 컬렉션과 필드, (2) 나중에 Oracle(SQL)로 옮길 때의 **초보자용 기본 테이블 설계**를 정리한다.
 
+> **"어느 코드가 DTO/DAO/DBM/Servlet 중 어디로 가는지", "Firestore 보안 규칙이 Java 코드로 어떻게 옮겨가는지"는 [ARCHITECTURE-FIREBASE-TO-JDBC.md](ARCHITECTURE-FIREBASE-TO-JDBC.md)를 참고.**
+
 ---
 
 ## 1. 현재 Firestore 구성
